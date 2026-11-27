@@ -124,6 +124,36 @@
   .install-hint{display:flex;gap:10px;align-items:flex-start;background:rgba(200,255,53,.06);
     border:1px solid rgba(200,255,53,.25);border-radius:16px;padding:12px;margin-bottom:12px;font-size:11px;line-height:1.7}
   .sep{height:1px;background:rgba(255,255,255,.08);margin:14px 0}
+
+  /* ---------- مؤقت التمرين ثلاثي الأبعاد ---------- */
+  .timer-panel{position:relative;overflow:hidden;margin:14px 0;background:
+    radial-gradient(circle at 12% 5%,rgba(200,255,53,.15),transparent 38%),
+    linear-gradient(145deg,rgba(20,29,39,.98),rgba(8,12,19,.98));
+    border:1px solid rgba(200,255,53,.18);box-shadow:0 18px 42px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.06)}
+  .timer-panel:before{content:"";position:absolute;width:190px;height:190px;border-radius:50%;left:-95px;top:-105px;
+    background:rgba(200,255,53,.08);filter:blur(18px);pointer-events:none}
+  .timer-layout{display:grid;grid-template-columns:minmax(130px, .85fr) minmax(180px,1.15fr);gap:16px;align-items:center;position:relative}
+  .timer-stage{display:flex;align-items:center;justify-content:center;perspective:700px;padding:8px}
+  .timer-orb{width:154px;height:154px;position:relative;transform:rotateX(8deg);filter:drop-shadow(0 13px 12px rgba(0,0,0,.4))}
+  .timer-orb svg{width:100%;height:100%;overflow:visible;transform:rotate(-90deg)}
+  .timer-orb .timer-track{stroke:rgba(255,255,255,.09);stroke-width:9;fill:none}
+  .timer-orb .timer-progress{stroke:var(--volt);stroke-width:9;stroke-linecap:round;fill:none;
+    stroke-dasharray:326.7;stroke-dashoffset:326.7;transition:stroke-dashoffset .25s linear;filter:drop-shadow(0 0 6px rgba(200,255,53,.55))}
+  .timer-orb:before{content:"";position:absolute;inset:13px;border-radius:50%;background:linear-gradient(145deg,#1b2730,#0b1018);
+    box-shadow:inset 7px 7px 17px rgba(255,255,255,.035),inset -8px -8px 18px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04)}
+  .timer-readout{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+  .timer-clock{font-size:34px;font-weight:950;letter-spacing:1px;line-height:1.1;font-variant-numeric:tabular-nums;color:#fff;text-shadow:0 2px 14px rgba(200,255,53,.14)}
+  .timer-caption{font-size:10px;color:var(--muted);font-weight:800;margin-top:6px}
+  .timer-controls{display:flex;gap:7px;margin-top:12px}
+  .timer-controls .btn{flex:1;min-width:0}
+  .timer-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .timer-presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .timer-presets button{border:1px solid rgba(200,255,53,.18);background:rgba(200,255,53,.07);color:var(--volt);
+    border-radius:10px;padding:7px 10px;font-size:11px;font-weight:850}
+  .timer-presets button:active{transform:translateY(1px) scale(.97)}
+  .timer-status{font-size:11px;color:var(--muted);margin-top:9px;min-height:16px}
+  @media(max-width:430px){.timer-layout{grid-template-columns:1fr;gap:5px}.timer-stage{padding:4px}.timer-orb{width:142px;height:142px}}
+
 </style>
 </head>
 <body>
@@ -200,6 +230,46 @@
       <button class="mini" style="color:var(--volt)" onclick="openCard()">+ كارت</button>
     </div>
     <div class="grid" id="cardsGrid"></div>
+
+
+    <section class="card p16 timer-panel" id="workoutTimerPanel">
+      <div class="between" style="margin-bottom:12px;align-items:flex-start">
+        <div class="row">
+          <div class="icon" style="color:var(--volt);background:rgba(200,255,53,.12)">⏱️</div>
+          <div><h2 style="font-size:15px">مؤقّت التمرين</h2><div class="micro muted">اضبط وقتك وابدأ من هنا</div></div>
+        </div>
+        <span class="chip chip-volt" style="font-size:10px">WORKOUT TIMER</span>
+      </div>
+      <div class="timer-layout">
+        <div class="timer-stage">
+          <div class="timer-orb">
+            <svg viewBox="0 0 130 130" aria-hidden="true">
+              <circle class="timer-track" cx="65" cy="65" r="52"></circle>
+              <circle class="timer-progress" id="timerProgress" cx="65" cy="65" r="52"></circle>
+            </svg>
+            <div class="timer-readout"><div class="timer-clock" id="timerClock">00:00</div><div class="timer-caption" id="timerCaption">جاهز للبدء</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="timer-inputs">
+            <div><label class="f" for="timerMinutes">الدقائق</label><input id="timerMinutes" type="number" min="0" max="99" value="1" inputmode="numeric"></div>
+            <div><label class="f" for="timerSeconds">الثواني</label><input id="timerSeconds" type="number" min="0" max="59" value="0" inputmode="numeric"></div>
+          </div>
+          <div class="timer-presets" aria-label="أوقات سريعة">
+            <button type="button" data-timer-seconds="30">30 ثانية</button>
+            <button type="button" data-timer-seconds="60">دقيقة</button>
+            <button type="button" data-timer-seconds="120">دقيقتان</button>
+            <button type="button" data-timer-seconds="300">5 دقائق</button>
+          </div>
+          <div class="timer-controls">
+            <button class="btn btn-main" id="timerStart" style="background:var(--volt);color:#080b0d">▶ ابدأ</button>
+            <button class="btn btn-ghost" id="timerPause" disabled>Ⅱ إيقاف</button>
+            <button class="btn btn-ghost" id="timerReset">↺</button>
+          </div>
+          <div class="timer-status" id="timerStatus" role="status" aria-live="polite">اختار المدة أو اضغط على وقت سريع.</div>
+        </div>
+      </div>
+    </section>
 
     <div class="grid2" style="margin-top:14px">
       <div class="card p16">
@@ -907,6 +977,130 @@
     document.getElementById("trackLabel").textContent = (TRACKS[track]||TRACKS.hype).emoji+" "+(TRACKS[track]||TRACKS.hype).name;
   }
 
+
+  /* ---------- مؤقت التمرين ---------- */
+  var workoutTimer = { duration:0, remaining:0, endAt:0, interval:null, running:false };
+  var timerAudioCtx = null;
+  function timerPad(n){ return String(n).padStart(2,"0"); }
+  function timerReadInputs(){
+    var mins = Math.max(0, Math.min(99, parseInt(document.getElementById("timerMinutes").value,10)||0));
+    var secs = Math.max(0, Math.min(59, parseInt(document.getElementById("timerSeconds").value,10)||0));
+    document.getElementById("timerMinutes").value = mins;
+    document.getElementById("timerSeconds").value = secs;
+    return mins*60+secs;
+  }
+  function timerSetInputs(total){
+    total = Math.max(0, Math.min(5999, Math.floor(total)));
+    document.getElementById("timerMinutes").value = Math.floor(total/60);
+    document.getElementById("timerSeconds").value = total%60;
+    workoutTimer.duration = total;
+    workoutTimer.remaining = total;
+    timerUpdate();
+  }
+  function timerUpdate(){
+    var left = Math.max(0, workoutTimer.remaining);
+    document.getElementById("timerClock").textContent = timerPad(Math.floor(left/60))+":"+timerPad(left%60);
+    var pct = workoutTimer.duration>0 ? (left/workoutTimer.duration) : 1;
+    document.getElementById("timerProgress").style.strokeDashoffset = String(326.7*(1-pct));
+    document.getElementById("timerCaption").textContent = workoutTimer.running ? "جاري العدّ" : (left===0 ? "جاهز للبدء" : "الوقت المتبقي");
+    document.getElementById("timerStart").textContent = workoutTimer.remaining>0 && !workoutTimer.running && workoutTimer.duration>0 ? "▶ استكمال" : "▶ ابدأ";
+    document.getElementById("timerPause").disabled = !workoutTimer.running;
+  }
+  function timerBeep(){
+    try{
+      var C = window.AudioContext || window.webkitAudioContext;
+      if(!C) return;
+      if(!timerAudioCtx) timerAudioCtx = new C();
+      if(timerAudioCtx.state==="suspended") timerAudioCtx.resume();
+      var start = timerAudioCtx.currentTime;
+      [0,.28,.56].forEach(function(offset){
+        var osc = timerAudioCtx.createOscillator(), gain = timerAudioCtx.createGain();
+        osc.type = "sine"; osc.frequency.value = 880;
+        gain.gain.setValueAtTime(.0001,start+offset);
+        gain.gain.exponentialRampToValueAtTime(.22,start+offset+.025);
+        gain.gain.exponentialRampToValueAtTime(.0001,start+offset+.2);
+        osc.connect(gain).connect(timerAudioCtx.destination);
+        osc.start(start+offset); osc.stop(start+offset+.22);
+      });
+    }catch(e){}
+    if(navigator.vibrate) navigator.vibrate([180,100,180,100,350]);
+  }
+  function timerFinish(){
+    workoutTimer.running = false;
+    if(workoutTimer.interval){ clearInterval(workoutTimer.interval); workoutTimer.interval=null; }
+    workoutTimer.remaining = 0;
+    timerUpdate();
+    document.getElementById("timerCaption").textContent = "خلص الوقت!";
+    document.getElementById("timerStatus").textContent = "أحسنت! انتهى الوقت المحدد.";
+    timerBeep();
+    toast("⏰ انتهى وقت التمرين!","ok");
+  }
+  function timerTick(){
+    if(!workoutTimer.running) return;
+    workoutTimer.remaining = Math.max(0,Math.ceil((workoutTimer.endAt-Date.now())/1000));
+    timerUpdate();
+    if(workoutTimer.remaining<=0) timerFinish();
+  }
+  function timerStart(){
+    if(workoutTimer.running) return;
+    if(workoutTimer.remaining<=0){
+      var total = timerReadInputs();
+      if(total<=0){ toast("اختار مدة أكبر من صفر"); return; }
+      workoutTimer.duration = total;
+      workoutTimer.remaining = total;
+    }
+    if(!workoutTimer.duration) workoutTimer.duration = workoutTimer.remaining;
+    try{
+      var C = window.AudioContext || window.webkitAudioContext;
+      if(C && !timerAudioCtx) timerAudioCtx = new C();
+      if(timerAudioCtx && timerAudioCtx.state==="suspended") timerAudioCtx.resume();
+    }catch(e){}
+    workoutTimer.running = true;
+    workoutTimer.endAt = Date.now()+workoutTimer.remaining*1000;
+    document.getElementById("timerStatus").textContent = "ركز في تمرينك… المؤقت شغال.";
+    if(workoutTimer.interval) clearInterval(workoutTimer.interval);
+    workoutTimer.interval = setInterval(timerTick,200);
+    timerTick();
+  }
+  function timerPause(){
+    if(!workoutTimer.running) return;
+    workoutTimer.remaining = Math.max(0,Math.ceil((workoutTimer.endAt-Date.now())/1000));
+    workoutTimer.running = false;
+    if(workoutTimer.interval){ clearInterval(workoutTimer.interval); workoutTimer.interval=null; }
+    timerUpdate();
+    document.getElementById("timerStatus").textContent = "المؤقت متوقف مؤقتًا.";
+  }
+  function timerReset(){
+    if(workoutTimer.interval){ clearInterval(workoutTimer.interval); workoutTimer.interval=null; }
+    workoutTimer.running = false;
+    workoutTimer.duration = 0;
+    workoutTimer.remaining = 0;
+    document.getElementById("timerMinutes").value = 1;
+    document.getElementById("timerSeconds").value = 0;
+    timerUpdate();
+    document.getElementById("timerStatus").textContent = "اختار المدة أو اضغط على وقت سريع.";
+  }
+  document.getElementById("timerStart").onclick = timerStart;
+  document.getElementById("timerPause").onclick = timerPause;
+  document.getElementById("timerReset").onclick = timerReset;
+  ["timerMinutes","timerSeconds"].forEach(function(id){
+    document.getElementById(id).addEventListener("change",function(){
+      if(workoutTimer.running) return;
+      var total = timerReadInputs();
+      workoutTimer.duration = 0; workoutTimer.remaining = 0;
+      document.getElementById("timerClock").textContent = timerPad(Math.floor(total/60))+":"+timerPad(total%60);
+      document.getElementById("timerProgress").style.strokeDashoffset = "326.7";
+      document.getElementById("timerCaption").textContent = "جاهز للبدء";
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-timer-seconds]"),function(btn){
+    btn.onclick = function(){
+      if(workoutTimer.running) return;
+      timerSetInputs(+btn.getAttribute("data-timer-seconds"));
+      document.getElementById("timerStatus").textContent = "المدة جاهزة. اضغط ابدأ.";
+    };
+  });
+
   /* ---------- تنقل ---------- */
   window.go = function(view){
     ["today","history","settings"].forEach(function(v){
@@ -984,7 +1178,7 @@
   if("Notification" in window) document.getElementById("notifyState").textContent = Notification.permission==="granted"? "الإشعارات مفعّلة ✔" : "الإشعارات مش مفعّلة — فعّلها عشان المنبه يظهر بره الصفحة.";
   setInterval(function(){ checkAlarm(); renderAlarmBar(); }, 5000);
   checkAlarm();
-  document.addEventListener("visibilitychange", function(){ if(!document.hidden){ render(); checkAlarm(); } });
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden){ render(); checkAlarm(); timerTick(); } });
 })();
 </script>
 </body>
