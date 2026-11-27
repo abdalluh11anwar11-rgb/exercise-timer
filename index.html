@@ -124,6 +124,29 @@
   .install-hint{display:flex;gap:10px;align-items:flex-start;background:rgba(200,255,53,.06);
     border:1px solid rgba(200,255,53,.25);border-radius:16px;padding:12px;margin-bottom:12px;font-size:11px;line-height:1.7}
   .sep{height:1px;background:rgba(255,255,255,.08);margin:14px 0}
+
+/* ===== تجربة 3D قوية + رسوم التمارين + المؤقت المدمج ===== */
+:root{--volt:#d7ff32;--sky:#28d9ff;--pink:#ff4fa3;--violet:#a78bfa;--orange:#ff9b38}
+body{background-color:#080b14;background-image:radial-gradient(ellipse at 12% 8%,rgba(0,210,255,.19),transparent 32%),radial-gradient(ellipse at 88% 0%,rgba(194,70,255,.18),transparent 34%),radial-gradient(ellipse at 50% 100%,rgba(255,70,130,.12),transparent 42%),linear-gradient(145deg,#080b14,#10172a 55%,#080b14)}
+.card{border:1px solid rgba(130,190,255,.18);background:linear-gradient(145deg,rgba(29,42,68,.96),rgba(10,15,28,.98));box-shadow:0 18px 0 rgba(0,0,0,.18),0 26px 48px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.12);transform:translateZ(0)}
+.ecard{isolation:isolate;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;background:linear-gradient(145deg,#1b2944,#0d1425 72%);box-shadow:0 9px 0 #080d18,0 18px 30px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.14)}
+.ecard:hover{transform:translateY(-5px);box-shadow:0 14px 0 #080d18,0 28px 44px rgba(0,0,0,.48),0 0 30px rgba(40,217,255,.12)}
+.ecard .exercise-art{height:112px;margin:12px -2px 10px;border-radius:17px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 45%,rgba(40,217,255,.2),transparent 58%),linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.exercise-art:after{content:"";position:absolute;inset:auto 12% 8px;height:10px;border-radius:50%;background:rgba(0,0,0,.45);filter:blur(8px)}
+.exercise-art svg{height:100px;width:150px;filter:drop-shadow(0 12px 12px rgba(0,0,0,.45));position:relative;z-index:1}
+.ecard .icon{width:48px;height:48px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.035));box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 7px 14px rgba(0,0,0,.25)}
+.timer-panel{margin-top:13px;padding:12px;border-radius:17px;background:linear-gradient(145deg,rgba(40,217,255,.12),rgba(167,139,250,.09));border:1px solid rgba(90,205,255,.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 8px 18px rgba(0,0,0,.2)}
+.timer-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+.timer-digits{font-size:27px;font-weight:1000;letter-spacing:1px;font-variant-numeric:tabular-nums;color:#fff;text-shadow:0 0 18px rgba(40,217,255,.35)}
+.timer-controls{display:flex;gap:6px;margin-top:9px}
+.timer-controls .btn{height:37px;font-size:12px}
+.timer-input{max-width:86px!important;height:34px!important;text-align:center;font-weight:900}
+.timer-progress{height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+.timer-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#28d9ff,#d7ff32);border-radius:99px;transition:width .2s}
+.music-showcase{border:1px solid rgba(255,255,255,.16);background:linear-gradient(145deg,rgba(48,33,83,.92),rgba(10,16,31,.96));box-shadow:0 12px 28px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.12)}
+@media(max-width:520px){.ecard{padding:13px}.exercise-art{height:98px!important}.exercise-art svg{height:90px}.timer-digits{font-size:24px}}
+@media(prefers-reduced-motion:reduce){.ecard,.card,.btn{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -213,7 +236,7 @@
           <div class="stat"><b id="mStreak" style="color:var(--orange)">0</b><span class="micro muted">سلسلة</span></div>
         </div>
       </div>
-      <div class="card p16">
+      <div class="card p16 music-showcase">
         <div class="between">
           <div class="row">
             <div class="icon" style="color:var(--volt);background:rgba(200,255,53,.12)"><span class="eq" id="eq"><i style="animation-delay:0s"></i><i style="animation-delay:.1s;height:11px"></i><i style="animation-delay:.2s;height:16px"></i><i style="animation-delay:.3s;height:9px"></i><i style="animation-delay:.4s;height:13px"></i></span></div>
@@ -465,6 +488,49 @@
   function activeDays(){ var set={}, n=0;
     for(var d in state.logs){ var row=state.logs[d]; var sum=0; for(var k in row) sum += (+row[k]||0); if(sum>0 && !set[d]){ set[d]=1; n++; } } return n; }
 
+
+  /* ---------- مؤقت مدمج داخل كارت التمرين ---------- */
+  var exerciseTimers = {};
+  function timerFormat(seconds){
+    seconds=Math.max(0,Math.ceil(seconds));
+    return Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0");
+  }
+  function timerPaint(id){
+    var t=exerciseTimers[id]; if(!t) return;
+    var display=document.getElementById("timerDisplay-"+id), bar=document.getElementById("timerProgress-"+id);
+    if(display) display.textContent=timerFormat(t.remaining);
+    if(bar) bar.style.width=(t.total?Math.max(0,Math.min(100,(1-t.remaining/t.total)*100)):0)+"%";
+    var btn=document.getElementById("timerStart-"+id); if(btn) btn.textContent=t.running?"❚❚ شغال":"▶ استكمال";
+  }
+  window.exerciseTimerStart=function(id){
+    var input=document.getElementById("timerInput-"+id), seconds=Math.max(1,Math.min(3600,Math.floor(Number(input&&input.value)||0)));
+    var t=exerciseTimers[id];
+    if(!t || t.remaining<=0){t={total:seconds,remaining:seconds,running:false,startedAt:0};exerciseTimers[id]=t;}
+    if(t.running) return;
+    t.running=true;t.startedAt=Date.now();
+    t.interval=setInterval(function(){
+      if(!t.running)return;
+      t.remaining=Math.max(0,t.total-(Date.now()-t.startedAt)/1000);
+      timerPaint(id);
+      if(t.remaining<=0){
+        clearInterval(t.interval);t.running=false;
+        var ex=state.exercises.filter(function(x){return x.id===id;})[0];
+        if(ex){ addReps(id,t.total); toast("خلص المؤقت! اتحسبت "+t.total+" ثانية ✔","ok"); }
+        timerPaint(id);
+      }
+    },200);
+    timerPaint(id);
+  };
+  window.exerciseTimerPause=function(id){
+    var t=exerciseTimers[id];if(!t||!t.running)return;
+    t.remaining=Math.max(0,t.total-(Date.now()-t.startedAt)/1000);t.running=false;clearInterval(t.interval);timerPaint(id);
+  };
+  window.exerciseTimerReset=function(id){
+    var input=document.getElementById("timerInput-"+id), seconds=Math.max(1,Math.min(3600,Math.floor(Number(input&&input.value)||0)));
+    var t=exerciseTimers[id];if(t&&t.interval)clearInterval(t.interval);
+    exerciseTimers[id]={total:seconds,remaining:seconds,running:false,startedAt:0};timerPaint(id);
+  };
+
   /* ---------- الرسم ---------- */
   function render(){
     var t = today();
@@ -505,6 +571,7 @@
           '<span class="micro muted">/ '+e.target+'</span></div>'+
           '<span class="micro '+(done?"":"muted")+'" '+(done?'style="color:'+c+'"':'')+'>'+(done?"الهدف اكتمل 🔥":"فاضل "+(e.target-reps))+'</span>'+
         '</div>'+
+        '<div class="exercise-art" aria-label="رسم توضيحي لتمرين '+esc(e.name)+'"><svg viewBox="0 0 180 110" role="img" aria-hidden="true"><defs><linearGradient id="artg'+e.id+'" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+c+'"/><stop offset="1" stop-color="#ffffff"/></linearGradient></defs><ellipse cx="90" cy="94" rx="53" ry="8" fill="rgba(0,0,0,.25)"/><g fill="none" stroke="url(#artg'+e.id+')" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><circle cx="90" cy="22" r="12" fill="url(#artg'+e.id+')" stroke="none"/><path d="M90 38 L90 66 M90 46 L61 57 L48 43 M90 46 L119 57 L132 43 M90 66 L68 88 M90 66 L112 88"/></g><g fill="'+c+'" opacity=".8"><rect x="25" y="38" width="9" height="22" rx="3"/><rect x="18" y="43" width="7" height="12" rx="2"/><rect x="146" y="38" width="9" height="22" rx="3"/><rect x="155" y="43" width="7" height="12" rx="2"/></g></svg></div>'+        (String(e.unit).indexOf("ثانية")>-1 ? '<div class="timer-panel" data-timer-card="'+e.id+'"><div class="timer-top"><div><b style="font-size:12px">⏱ مؤقت التمرين</b><div class="micro muted">موجود جنب التمرين — بالثواني</div></div><span class="timer-digits" id="timerDisplay-'+e.id+'">'+Math.floor(e.target/60)+':'+(e.target%60<10?'0':'')+(e.target%60)+'</span></div><div class="row" style="gap:7px"><label class="micro muted" for="timerInput-'+e.id+'">المدة</label><input class="timer-input" type="number" min="1" max="3600" value="'+e.target+'" id="timerInput-'+e.id+'" aria-label="مدة المؤقت بالثواني"><span class="micro muted">ثانية</span></div><div class="timer-progress"><i id="timerProgress-'+e.id+'"></i></div><div class="timer-controls"><button class="btn btn-main" style="background:'+c+'" id="timerStart-'+e.id+'" onclick="exerciseTimerStart('+e.id+')">▶ ابدأ</button><button class="btn btn-ghost" onclick="exerciseTimerPause('+e.id+')">إيقاف مؤقت</button><button class="btn btn-ghost" onclick="exerciseTimerReset('+e.id+')">↺</button></div></div>' : '')+
         '<div class="bar"><i style="width:'+pct+'%;background:'+c+'"></i></div>'+
         '<div class="btns">'+
           '<button class="btn btn-ghost btn-square" onclick="addReps('+e.id+',-'+e.step+')" aria-label="خصم">−</button>'+
