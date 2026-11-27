@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#05070c" />
+<title>عَدّاد | كروت تمرينك اليومي</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2305070c'/%3E%3Cpath d='M34 12 L22 36 h9 l-4 16 15-24h-10z' fill='%23c8ff35'/%3E%3C/svg%3E" />
+<style>
+  :root{
+    --ink:#05070c; --panel:#0b0f17; --line:#1d2432; --muted:#8b94a7;
+    --volt:#c8ff35; --orange:#ff8a3d; --sky:#4cd7f5; --pink:#ff5fb2; --violet:#a78bfa; --rose:#ff6b6b;
+    --radius:22px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--ink); color:#fff; min-height:100vh;
+    font-family:"Cairo","Segoe UI",Tahoma,system-ui,sans-serif;
+    background-image:
+      radial-gradient(900px 520px at 85% -10%,rgba(200,255,53,.10),transparent 60%),
+      radial-gradient(700px 480px at 5% 0%,rgba(76,215,245,.08),transparent 55%),
+      radial-gradient(800px 600px at 50% 110%,rgba(255,95,178,.07),transparent 60%);
+    background-attachment:fixed; padding-bottom:96px;
+  }
+  .wrap{max-width:1060px;margin:0 auto;padding:18px 14px 40px}
+  .card{position:relative;border-radius:var(--radius);border:1px solid rgba(255,255,255,.07);
+    background-image:linear-gradient(160deg,rgba(23,30,45,.92),rgba(9,12,19,.94));
+    box-shadow:0 22px 45px -30px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.04)}
+  .p16{padding:16px}.p20{padding:20px}
+  .row{display:flex;align-items:center;gap:10px}
+  .between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .grow{flex:1;min-width:0}
+  .muted{color:var(--muted)}
+  .tiny{font-size:11px;line-height:1.6}
+  .micro{font-size:10px}
+  h1,h2,h3{margin:0}
+  .num{font-variant-numeric:tabular-nums;font-weight:900;letter-spacing:-.02em;line-height:.95}
+  .logo{width:44px;height:44px;border-radius:15px;background:var(--volt);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 34px -10px rgba(200,255,53,.9)}
+  .chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:800}
+  .chip-volt{background:rgba(200,255,53,.13);color:var(--volt)}
+  .chip-orange{background:rgba(255,138,61,.13);color:var(--orange)}
+  .chip-ghost{background:rgba(255,255,255,.06);color:var(--muted)}
+  .ring{width:140px;height:140px;position:relative;flex:0 0 auto;margin:0 auto}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .hero{display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .stat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:8px 10px}
+  .stat b{display:block;font-size:18px;font-weight:900}
+  .bar{height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:10px}
+  .bar > i{display:block;height:100%;border-radius:999px;transition:width .45s cubic-bezier(.22,1,.36,1)}
+  .grid{display:grid;gap:12px;grid-template-columns:1fr}
+  @media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+  @media(min-width:1000px){.grid{grid-template-columns:1fr 1fr 1fr}}
+  .grid2{display:grid;gap:12px;grid-template-columns:1fr}
+  @media(min-width:860px){.grid2{grid-template-columns:1fr 1fr}}
+  .ecard{padding:15px;overflow:hidden}
+  .ecard.done{border-color:rgba(200,255,53,.35);box-shadow:0 0 46px -18px rgba(200,255,53,.6)}
+  .icon{width:44px;height:44px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:21px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);flex:0 0 auto}
+  .big{font-size:40px;font-weight:900;line-height:1}
+  .btns{display:flex;gap:7px;align-items:center;margin-top:14px}
+  button{font-family:inherit;cursor:pointer;border:0;font-weight:800}
+  .btn{height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:14px;transition:transform .12s}
+  .btn:active{transform:scale(.96)}
+  .btn-ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff}
+  .btn-main{flex:1;color:var(--ink);font-weight:900}
+  .btn-square{width:44px;flex:0 0 44px;font-size:19px}
+  .mini{height:32px;border-radius:10px;padding:0 10px;font-size:11px;background:rgba(255,255,255,.06);color:var(--muted)}
+  .mini:hover{color:#fff}
+  .quick{display:flex;gap:5px;flex-wrap:wrap}
+  .link{background:none;color:var(--muted);font-size:11px;text-decoration:underline dotted;text-underline-offset:4px;padding:0}
+  .link:hover{color:#fff}
+  input,select{font-family:inherit;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.13);color:#fff;
+    border-radius:12px;height:42px;padding:0 10px;font-size:14px;outline:none;width:100%}
+  input:focus,select:focus{border-color:rgba(200,255,53,.5)}
+  label.f{display:block;font-size:11px;font-weight:800;color:var(--muted);margin:0 0 5px}
+  .week{display:flex;gap:6px;align-items:flex-end;margin-top:14px}
+  .wcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+  .wbar{width:100%;height:90px;border-radius:9px;background:rgba(255,255,255,.03);display:flex;align-items:flex-end;overflow:hidden}
+  .wbar > i{width:100%;border-radius:9px;background:linear-gradient(to top,rgba(76,215,245,.15),rgba(76,215,245,.7));transition:height .45s}
+  .wbar > i.full{background:linear-gradient(to top,rgba(200,255,53,.2),var(--volt))}
+  .heat{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .heat-grid{display:grid;gap:4px;min-width:560px;direction:rtl}
+  .hcell{height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+  .nav{position:fixed;inset-inline:0;bottom:0;z-index:30;border-top:1px solid rgba(255,255,255,.08);
+    background:rgba(5,7,12,.9);backdrop-filter:blur(16px);display:flex;justify-content:space-around;
+    padding:8px 8px max(env(safe-area-inset-bottom),10px)}
+  .nav button{background:none;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;padding:6px 0;border-radius:14px}
+  .nav button.on{color:var(--volt);background:rgba(200,255,53,.1)}
+  .nav .ico{font-size:19px;line-height:1}
+  .view{display:none}.view.on{display:block}
+  .toast{position:fixed;left:14px;right:14px;bottom:88px;z-index:60;max-width:380px;margin:0 auto;
+    border-radius:16px;padding:12px 14px;font-size:12px;font-weight:800;text-align:center;
+    background:rgba(255,107,107,.18);border:1px solid rgba(255,107,107,.35);backdrop-filter:blur(8px)}
+  .toast.ok{background:rgba(200,255,53,.15);border-color:rgba(200,255,53,.4);color:var(--volt)}
+  .modal{position:fixed;inset:0;z-index:70;background:rgba(5,7,12,.92);backdrop-filter:blur(8px);
+    display:none;align-items:center;justify-content:center;padding:16px;overflow:auto}
+  .modal.on{display:flex}
+  .modal .box{width:100%;max-width:460px;padding:18px}
+  .alarm{position:fixed;inset:0;z-index:80;display:none;overflow:auto;background:rgba(5,7,12,.97);padding:16px}
+  .alarm.on{display:block}
+  .alarm .box{max-width:520px;margin:12px auto;display:flex;flex-direction:column;gap:12px}
+  .flash{animation:flash 1.8s ease-in-out infinite}
+  @keyframes flash{0%,100%{opacity:.4}50%{opacity:1}}
+  @keyframes pop{0%{transform:scale(.85);opacity:.5}60%{transform:scale(1.07)}100%{transform:scale(1)}}
+  .pop{animation:pop .32s cubic-bezier(.2,.9,.3,1.3)}
+  .eq{display:flex;gap:3px;align-items:flex-end;height:16px}
+  .eq i{width:3px;border-radius:2px;background:currentColor;animation:eq .8s ease-in-out infinite}
+  @keyframes eq{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+  .days{display:flex;flex-wrap:wrap;gap:6px}
+  .day-btn{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:var(--muted);
+    border-radius:11px;padding:8px 10px;font-size:11px}
+  .day-btn.on{border-color:rgba(200,255,53,.5);background:rgba(200,255,53,.15);color:var(--volt)}
+  .sound{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:var(--muted);
+    border-radius:12px;padding:9px 6px;font-size:11px;text-align:center;width:100%}
+  .sound.on{border-color:rgba(200,255,53,.5);background:rgba(200,255,53,.12);color:var(--volt)}
+  .switch{position:relative;width:62px;height:32px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.1);transition:.2s}
+  .switch.on{background:rgba(200,255,53,.28);border-color:rgba(200,255,53,.5)}
+  .switch b{position:absolute;top:3px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.55);color:#05070c;
+    font-size:9px;display:flex;align-items:center;justify-content:center;transition:.2s;right:4px}
+  .switch.on b{right:32px;background:var(--volt)}
+  .install-hint{display:flex;gap:10px;align-items:flex-start;background:rgba(200,255,53,.06);
+    border:1px solid rgba(200,255,53,.25);border-radius:16px;padding:12px;margin-bottom:12px;font-size:11px;line-height:1.7}
+  .sep{height:1px;background:rgba(255,255,255,.08);margin:14px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="install-hint" id="installHint">
+    <span style="font-size:18px">📲</span>
+    <div class="grow">
+      <b>خليها تطبيق على شاشتك:</b> من قائمة المتصفح اختار «إضافة إلى الشاشة الرئيسية» (آيفون: مشاركة ← إضافة للشاشة الرئيسية). النسخة دي ملف واحد شغال من غير إنترنت خالص.
+      <div style="margin-top:6px"><button class="mini" onclick="document.getElementById('installHint').style.display='none'">تمام، اقفل التنبيه</button></div>
+    </div>
+  </div>
+
+  <header class="between" style="margin-bottom:14px">
+    <div class="row">
+      <div class="logo">💪</div>
+      <div>
+        <h1 style="font-size:20px;font-weight:900">عَدّاد</h1>
+        <div class="tiny muted" id="todayLabel">—</div>
+      </div>
+    </div>
+    <div class="row">
+      <span class="chip chip-orange" id="streakChip">🔥 0</span>
+      <button class="mini" id="syncNote" title="البيانات محفوظة على جهازك">💾 محفوظ محليًا</button>
+    </div>
+  </header>
+
+  <!-- ============ الرئيسية ============ -->
+  <section class="view on" id="view-today">
+    <div class="card p20">
+      <div class="hero">
+        <div class="ring">
+          <svg width="140" height="140"><circle cx="70" cy="70" r="62" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="11"/>
+            <circle id="ringArc" cx="70" cy="70" r="62" fill="none" stroke="#c8ff35" stroke-width="11" stroke-linecap="round"
+              stroke-dasharray="389.6" stroke-dashoffset="389.6" style="transition:stroke-dashoffset .5s"/></svg>
+          <div class="inner"><div class="num" id="pctText" style="font-size:32px">0%</div><div class="micro muted">من هدف النهارده</div></div>
+        </div>
+        <div class="grow">
+          <div class="row" style="flex-wrap:wrap">
+            <span class="chip chip-volt" id="todayChip">النهارده</span>
+            <span class="chip chip-ghost" id="cardsDone">0/0 كارت خلص</span>
+          </div>
+          <h2 style="font-size:23px;font-weight:900;margin:10px 0 2px" id="heroTitle">يلا بينا نبدأ 👊</h2>
+          <p class="tiny muted" id="heroTip">سجّل أول عدة وابدأ عدّك.</p>
+          <div class="stats">
+            <div class="stat"><b id="statReps" style="color:var(--volt)">0</b><span class="micro muted">من <span id="statTarget">0</span> عدة</span></div>
+            <div class="stat"><b id="statStreak" style="color:var(--orange)">0</b><span class="micro muted">سلسلة أيام</span></div>
+            <div class="stat"><b id="statLife">0</b><span class="micro muted">إجمالي كل الأيام</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="bar"><i id="heroBar" style="width:0%;background:linear-gradient(90deg,rgba(200,255,53,.5),var(--volt),var(--sky))"></i></div>
+      <div class="between tiny muted" style="margin-top:7px"><span id="heroSub">0 عدة</span><span id="heroRemain" style="color:var(--volt)"></span></div>
+    </div>
+
+    <div class="card p16" style="margin-top:12px">
+      <div class="between" style="flex-wrap:wrap">
+        <div class="row grow">
+          <div class="icon" style="color:var(--volt);background:rgba(200,255,53,.12)">⏰</div>
+          <div class="grow">
+            <div class="row" style="flex-wrap:wrap"><b style="font-size:13px">المنبه اليومي</b>
+              <span class="chip chip-volt" id="alarmState" style="font-size:10px">شغال</span></div>
+            <div class="tiny muted" id="alarmCountdown">—</div>
+          </div>
+        </div>
+        <div class="row">
+          <button class="mini" style="color:var(--volt)" id="testAlarm">▶ جرّب الإنذار</button>
+          <button class="mini" onclick="go('settings')">تعديل</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="between" style="margin:18px 0 10px">
+      <div><h2 style="font-size:17px">كروت النهارده</h2><div class="micro muted">كل ضغطة بتتحفظ على جهازك فورًا</div></div>
+      <button class="mini" style="color:var(--volt)" onclick="openCard()">+ كارت</button>
+    </div>
+    <div class="grid" id="cardsGrid"></div>
+
+    <div class="grid2" style="margin-top:14px">
+      <div class="card p16">
+        <div class="between"><div><h2 style="font-size:13px">نبض الأسبوع</h2><div class="micro muted">آخر 7 أيام</div></div>
+          <button class="mini" onclick="go('history')">السجل ←</button></div>
+        <div class="week" id="weekChart"></div>
+        <div class="sep"></div>
+        <div class="stats" style="margin-top:0">
+          <div class="stat"><b id="mMonth">0</b><span class="micro muted">عدة الشهر</span></div>
+          <div class="stat"><b id="mDays" style="color:var(--volt)">0</b><span class="micro muted">يوم اتمرنت</span></div>
+          <div class="stat"><b id="mStreak" style="color:var(--orange)">0</b><span class="micro muted">سلسلة</span></div>
+        </div>
+      </div>
+      <div class="card p16">
+        <div class="between">
+          <div class="row">
+            <div class="icon" style="color:var(--volt);background:rgba(200,255,53,.12)"><span class="eq" id="eq"><i style="animation-delay:0s"></i><i style="animation-delay:.1s;height:11px"></i><i style="animation-delay:.2s;height:16px"></i><i style="animation-delay:.3s;height:9px"></i><i style="animation-delay:.4s;height:13px"></i></span></div>
+            <div><b style="font-size:13px">مشغل الحماس</b><div class="micro muted" id="trackLabel">🔥 حماس جامد</div></div>
+          </div>
+          <button class="btn btn-main" id="playBtn" style="flex:0 0 46px;width:46px;height:46px;border-radius:50%;background:var(--volt)">▶</button>
+        </div>
+        <div class="row" style="gap:6px;margin-top:12px;flex-wrap:wrap" id="trackBtns"></div>
+        <div class="row" style="margin-top:12px">
+          <span class="micro muted">🔊</span>
+          <input type="range" id="vol" min="0" max="100" value="65" style="height:6px;padding:0;background:none" />
+          <span class="micro num muted" id="volText">65</span>
+        </div>
+        <div class="micro muted" style="margin-top:8px">موسيقى بتتولد في المتصفح — مفيش ملفات ولا إنترنت.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ السجل ============ -->
+  <section class="view" id="view-history">
+    <div class="between" style="margin-bottom:12px">
+      <div><h2 style="font-size:18px">سجل التمارين</h2><div class="micro muted">كل مربع = عدة سجلتها في اليوم</div></div>
+      <div class="row" id="rangeBtns"></div>
+    </div>
+    <div class="stats" style="grid-template-columns:repeat(2,1fr);margin-bottom:12px">
+      <div class="card p16"><div class="micro muted">إجمالي العدة</div><div class="num" id="hTotal" style="font-size:24px;color:var(--volt)">0</div></div>
+      <div class="card p16"><div class="micro muted">أيام كاملة</div><div class="num" id="hComplete" style="font-size:24px;color:var(--sky)">0</div></div>
+      <div class="card p16"><div class="micro muted">نسبة الالتزام</div><div class="num" id="hAdherence" style="font-size:24px;color:var(--violet)">0%</div></div>
+      <div class="card p16"><div class="micro muted">أفضل يوم</div><div class="num" id="hBest" style="font-size:24px;color:var(--orange)">—</div></div>
+    </div>
+    <div class="card p16">
+      <h2 style="font-size:13px;margin-bottom:12px">خريطة الالتزام</h2>
+      <div class="heat"><div class="heat-grid" id="heat"></div></div>
+    </div>
+    <div class="card p16" style="margin-top:12px">
+      <h2 style="font-size:13px;margin-bottom:10px">إجمالي كل تمرين في الفترة</h2>
+      <div id="totalsList"></div>
+    </div>
+  </section>
+
+  <!-- ============ الإعدادات ============ -->
+  <section class="view" id="view-settings">
+    <div class="card p16">
+      <div class="between">
+        <div class="row"><div class="icon" style="color:var(--volt);background:rgba(200,255,53,.12)">⏰</div>
+          <div><b style="font-size:14px">المنبه اليومي</b><div class="micro muted" id="alarmSub">—</div></div></div>
+        <button class="switch" id="alarmToggle" aria-label="تشغيل / إيقاف المنبه"><b>ON</b></button>
+      </div>
+      <div class="grid2" style="margin-top:14px">
+        <div><label class="f">وقت المنبه</label><input type="time" id="alarmTime" class="num" style="font-size:18px" /></div>
+        <div><label class="f">الأيام</label><div class="days" id="dayBtns"></div>
+          <div class="row" style="gap:10px;margin-top:8px">
+            <button class="link" id="allDays">كل يوم</button>
+            <button class="link" id="altDays">يوم بعد يوم</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px"><label class="f">رسالة المنبه</label><input id="alarmMsg" maxlength="140" /></div>
+      <div style="margin-top:12px"><label class="f">نغمة المنبه / المشغل</label>
+        <div class="grid" style="grid-template-columns:repeat(2,1fr);gap:6px">
+          <button class="sound" data-sound="hype">🔥 حماس جامد<small style="display:block;opacity:.65">126 BPM</small></button>
+          <button class="sound" data-sound="beast">🦾 وحش الحديد<small style="display:block;opacity:.65">146 BPM</small></button>
+          <button class="sound" data-sound="focus">🎧 فوكس هادي<small style="display:block;opacity:.65">98 BPM</small></button>
+          <button class="sound" data-sound="custom">🎵 أغنيتك انت<small style="display:block;opacity:.65">لينك mp3</small></button>
+        </div>
+      </div>
+      <div id="customUrlBox" style="margin-top:10px;display:none">
+        <label class="f">لينك الأغنية</label><input id="alarmUrl" dir="ltr" placeholder="https://example.com/hype.mp3" />
+      </div>
+      <div class="row" style="margin-top:12px;flex-wrap:wrap">
+        <button class="btn btn-main" id="saveAlarm" style="background:var(--volt)">💾 احفظ الإعدادات</button>
+        <button class="btn btn-ghost" id="testAlarm2" style="padding:0 14px">▶ جرّب</button>
+        <button class="btn btn-ghost" id="notifyBtn" style="padding:0 14px">🔔 فعّل الإشعارات</button>
+      </div>
+      <div class="micro muted" id="notifyState" style="margin-top:8px"></div>
+    </div>
+
+    <div class="between" style="margin:18px 0 10px">
+      <div><h2 style="font-size:17px">كروت التمارين</h2><div class="micro muted">عدّل الهدف أو ضيف تمرين جديد</div></div>
+      <button class="mini" style="color:var(--volt)" onclick="openCard()">+ كارت</button>
+    </div>
+    <div class="card p16"><div id="cardsEditor"></div></div>
+
+    <div class="card p16" style="margin-top:12px">
+      <h2 style="font-size:13px;margin-bottom:8px">البيانات والنسخ الاحتياطي</h2>
+      <p class="micro muted" style="margin:0 0 10px">كل بياناتك على جهازك. اعمل نسخة احتياطية قبل ما تغيّر المتصفح أو تمسح بياناته.</p>
+      <div class="row" style="flex-wrap:wrap">
+        <button class="mini" id="exportBtn" style="color:var(--volt)">⬇ تنزيل نسخة</button>
+        <button class="mini" id="importBtn">⬆ استرجاع نسخة</button>
+        <button class="mini" id="resetBtn" style="color:var(--rose)">🗑 تصفير كل حاجة</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none" />
+      </div>
+      <div class="micro muted" style="margin-top:10px" id="storageInfo"></div>
+    </div>
+  </section>
+</div>
+
+<nav class="nav">
+  <button data-view="today" class="on"><span class="ico">🏋️</span>النهارده</button>
+  <button data-view="history"><span class="ico">📅</span>السجل</button>
+  <button data-view="settings"><span class="ico">⚙️</span>الإعدادات</button>
+</nav>
+
+<!-- مودال الكارت -->
+<div class="modal" id="cardModal">
+  <div class="card box">
+    <div class="between" style="margin-bottom:12px">
+      <h2 style="font-size:15px" id="cardModalTitle">كارت تمرين</h2>
+      <button class="mini" onclick="closeCard()">✕</button>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:8px">
+      <div><label class="f">الاسم</label><input id="fName" maxlength="40" placeholder="ضغط" /></div>
+      <div><label class="f">الوحدة</label><input id="fUnit" maxlength="12" placeholder="عدة" /></div>
+      <div><label class="f">الهدف اليومي</label><input id="fTarget" type="number" min="1" /></div>
+      <div><label class="f">خطوة الزيادة</label><input id="fStep" type="number" min="1" /></div>
+      <div><label class="f">أيقونة</label><input id="fEmoji" maxlength="4" placeholder="💪" /></div>
+      <div><label class="f">ملاحظة</label><input id="fHint" maxlength="60" placeholder="صدر وترايسبس" /></div>
+    </div>
+    <div style="margin-top:10px"><label class="f">اللون</label>
+      <div class="row" id="colorBtns" style="flex-wrap:wrap"></div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn btn-main" id="saveCard" style="background:var(--volt)">احفظ</button>
+      <button class="btn btn-ghost" id="deleteCard" style="padding:0 12px;color:var(--rose)">حذف</button>
+    </div>
+  </div>
+</div>
+
+<!-- شاشة المنبه -->
+<div class="alarm" id="alarmScreen">
+  <div class="box">
+    <div class="between">
+      <span class="chip chip-volt">⏰ منبه التمرين</span>
+      <button class="mini" onclick="dismissAlarm()">✕</button>
+    </div>
+    <div class="card p20" style="text-align:center">
+      <div class="icon flash" style="width:70px;height:70px;border-radius:50%;margin:0 auto 10px;font-size:32px;color:var(--volt);background:rgba(200,255,53,.15)">🔔</div>
+      <div class="num" id="alarmClock" style="font-size:40px">22:00</div>
+      <div class="micro muted">المنبه ضرب دلوقتي</div>
+      <h2 style="font-size:20px;margin:12px 0 4px" id="alarmMessage">قوم اتمرن يا وحش…</h2>
+      <div class="row" style="justify-content:center;flex-wrap:wrap;margin-top:14px">
+        <button class="btn btn-main" id="alarmPlay" style="background:var(--volt);max-width:190px">▶ شغّل الأغنية</button>
+        <button class="btn btn-ghost" onclick="snoozeAlarm()" style="padding:0 14px">⏱ فكرني بعد 10 دقايق</button>
+      </div>
+    </div>
+    <div class="card p16">
+      <div class="between" style="margin-bottom:10px"><b style="font-size:13px">فاضل إيه النهارده؟</b>
+        <button class="mini" style="color:var(--volt)" onclick="dismissAlarm()">افتح التمارين ←</button></div>
+      <div id="alarmTasks"></div>
+    </div>
+    <button class="btn btn-ghost" onclick="dismissAlarm()" style="margin-bottom:20px">أنا قايم… اقفل الصوت</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" style="display:none"></div>
+
+<script>
+(function(){
+  "use strict";
+  var LS = "addad.v1";
+  var COLORS = { volt:"#c8ff35", orange:"#ff8a3d", sky:"#4cd7f5", pink:"#ff5fb2", violet:"#a78bfa", rose:"#ff6b6b" };
+  var WEEKDAYS = ["الأحد","الاتنين","التلات","الأربع","الخميس","الجمعة","السبت"];
+  var TRACKS = {
+    hype:  { name:"حماس جامد", emoji:"🔥", bpm:126, kick:[0,4,8,12], hats:[0,2,4,6,8,10,12,14],
+             bass:[55,null,55,82.41,73.42,null,65.41,55,55,null,55,98,82.41,null,73.42,65.41],
+             lead:[440,null,523.25,null,659.25,null,523.25,493.88,440,null,392,null,523.25,null,587.33,null], leadWave:"square" },
+    beast: { name:"وحش الحديد", emoji:"🦾", bpm:146, kick:[0,3,6,8,11,14], hats:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+             bass:[49,49,49,null,61.74,null,55,49,49,49,null,73.42,61.74,null,55,null],
+             lead:[587.33,null,622.25,null,783.99,739.99,622.25,null,587.33,null,523.25,null,587.33,659.25,null,783.99], leadWave:"sawtooth" },
+    focus: { name:"فوكس هادي", emoji:"🎧", bpm:98, kick:[0,8], hats:[2,6,10,14],
+             bass:[65.41,null,null,null,73.42,null,null,null,55,null,null,null,61.74,null,null,null],
+             lead:[523.25,null,587.33,null,659.25,null,587.33,null,523.25,null,493.88,null,440,null,493.88,null], leadWave:"triangle" }
+  };
+  var DEFAULT_EX = [
+    {name:"ضغط",emoji:"💪",unit:"عدة",target:50,step:10,accent:"volt",hint:"صدر وكتف وترايسبس"},
+    {name:"بطن",emoji:"🔥",unit:"عدة",target:100,step:20,accent:"orange",hint:"كور كامل"},
+    {name:"عقلة",emoji:"🦾",unit:"عدة",target:30,step:5,accent:"sky",hint:"ظهر وبايسبس"},
+    {name:"سكوات",emoji:"🦵",unit:"عدة",target:60,step:15,accent:"violet",hint:"رجل واتزان"},
+    {name:"بربيز",emoji:"⚡",unit:"عدة",target:30,step:10,accent:"pink",hint:"كارديو سريع"},
+    {name:"بلانك",emoji:"🧘",unit:"ثانية",target:120,step:30,accent:"rose",hint:"ثبّت واتنفس"}
+  ];
+
+  var today = function(){ var d=new Date(); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); };
+  function pad(n){ return (n<10?"0":"")+n; }
+  function shift(key, amount){ var p=key.split("-"); var d=new Date(+p[0], +p[1]-1, +p[2]); d.setDate(d.getDate()+amount);
+    return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+  function dayLabel(key){ var p=key.split("-"); var d=new Date(+p[0],+p[1]-1,+p[2]);
+    return d.toLocaleDateString("ar-EG",{weekday:"long",day:"numeric",month:"long"}); }
+  function weekday(key){ var p=key.split("-"); return WEEKDAYS[new Date(+p[0],+p[1]-1,+p[2]).getDay()]; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function time12(t){ var p=String(t||"22:00").split(":"); var h=+p[0], m=p[1]||"00";
+    return ((h%12)||12)+":"+m+" "+(h>=12?"م":"ص"); }
+
+  /* ---------- الحالة ---------- */
+  var state = load();
+  function load(){
+    var base = { exercises:[], logs:{}, reminder:{ enabled:true, time:"22:00", days:[0,1,2,3,4,5,6], sound:"hype", url:"", message:"قوم اتمرن يا وحش… الدنيا مستنياك 👊" }, nextId:1 };
+    try{
+      var raw = localStorage.getItem(LS);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        base.exercises = Array.isArray(parsed.exercises)? parsed.exercises : base.exercises;
+        base.logs = parsed.logs && typeof parsed.logs==="object"? parsed.logs : {};
+        base.reminder = Object.assign(base.reminder, parsed.reminder||{});
+        base.nextId = parsed.nextId || (base.exercises.reduce(function(m,e){return Math.max(m,e.id);},0)+1);
+      }
+    }catch(e){}
+    if(!base.exercises.length){
+      base.exercises = DEFAULT_EX.map(function(e,i){ return Object.assign({id:i+1, archived:false}, e); });
+      base.nextId = base.exercises.length+1;
+    }
+    if(!base.reminder.days || !base.reminder.days.length) base.reminder.days=[0,1,2,3,4,5,6];
+    return base;
+  }
+  function save(){
+    try{
+      localStorage.setItem(LS, JSON.stringify(state));
+      toast("اتحفظ على جهازك ✔","ok");
+    }catch(e){ toast("مقدرناش نحفظ على الجهاز — المساحة ممتلئة"); }
+  }
+  function repsOf(exId, day){
+    var d = state.logs[day]; if(!d) return 0; var v = d[exId]; return typeof v==="number"? v : 0;
+  }
+  function setReps(exId, day, value){
+    if(!state.logs[day]) state.logs[day] = {};
+    state.logs[day][exId] = Math.max(0, Math.min(100000, Math.round(value)));
+    save();
+  }
+  function activeEx(){ return state.exercises.filter(function(e){ return !e.archived; }); }
+
+  /* ---------- حسابات ---------- */
+  function summary(day){
+    var list = activeEx(), reps=0, target=0, complete = list.length>0;
+    list.forEach(function(e){
+      var r = repsOf(e.id, day); reps += r; target += e.target;
+      if(r < e.target) complete = false;
+    });
+    return { reps:reps, target:target, pct: target? Math.min(100, Math.round(reps/target*100)) : 0, complete:complete };
+  }
+  function streak(){
+    var key = today(), s = summary(key).complete ? key : shift(key,-1), count = 0, guard = 0;
+    while(summary(s).complete && guard < 4000){ count++; s = shift(s,-1); guard++; }
+    return count;
+  }
+  function lifetime(){ var total=0; for(var d in state.logs){ var row=state.logs[d]; for(var k in row) total += (+row[k]||0); } return total; }
+  function monthReps(){ var prefix = today().slice(0,7), total=0;
+    for(var d in state.logs){ if(d.slice(0,7)===prefix){ for(var k in state.logs[d]) total += (+state.logs[d][k]||0); } } return total; }
+  function activeDays(){ var set={}, n=0;
+    for(var d in state.logs){ var row=state.logs[d]; var sum=0; for(var k in row) sum += (+row[k]||0); if(sum>0 && !set[d]){ set[d]=1; n++; } } return n; }
+
+  /* ---------- الرسم ---------- */
+  function render(){
+    var t = today();
+    var label = document.getElementById("todayLabel"); if(label) label.textContent = dayLabel(t);
+    var sum = summary(t), st = streak(), list = activeEx();
+    document.getElementById("pctText").textContent = sum.pct+"%";
+    document.getElementById("ringArc").setAttribute("stroke-dashoffset", String(389.6 - (389.6*sum.pct/100)));
+    document.getElementById("todayChip").textContent = dayLabel(t);
+    var doneCount = list.filter(function(e){ return repsOf(e.id,t) >= e.target; }).length;
+    document.getElementById("cardsDone").textContent = doneCount+"/"+list.length+" كارت خلص";
+    document.getElementById("streakChip").textContent = "🔥 "+st;
+    document.getElementById("statReps").textContent = sum.reps;
+    document.getElementById("statTarget").textContent = sum.target;
+    document.getElementById("statStreak").textContent = st;
+    document.getElementById("statLife").textContent = lifetime();
+    document.getElementById("heroBar").style.width = sum.pct+"%";
+    document.getElementById("heroSub").textContent = "سجلت "+sum.reps+" عدة";
+    document.getElementById("heroRemain").textContent = sum.complete? "الهدف كامل 🔥" : "فاضل "+Math.max(0,sum.target-sum.reps)+" عدة";
+    document.getElementById("heroTitle").textContent = sum.complete? "النهارده يومك يا وحش 🏆" : (sum.pct>0? "كمّل… انت قريب 👊" : "يلا بينا نبدأ 👊");
+    document.getElementById("heroTip").textContent = sum.complete? "خلصت كل حاجة… ارتاح واشرب مياه 💧"
+      : sum.pct>=50? "نص المشوار خلاص… متوقفش ⚡" : sum.pct>0? "الجسم سخن… كمّل 💪" : "سجّل أول عدة وابدأ عدّك.";
+
+    // كروت التمارين
+    var grid = document.getElementById("cardsGrid");
+    grid.innerHTML = list.map(function(e){
+      var reps = repsOf(e.id,t), pct = Math.min(100, Math.round(reps/e.target*100)), done = reps>=e.target;
+      var c = COLORS[e.accent]||COLORS.volt;
+      return '<article class="card ecard'+(done?" done":"")+'">'+
+        '<div class="between" style="align-items:flex-start">'+
+          '<div class="row"><div class="icon" style="color:'+c+';background:'+hexA(c,.12)+'">'+esc(e.emoji)+'</div>'+
+          '<div><h3 style="font-size:15px">'+esc(e.name)+'</h3>'+
+          '<div class="micro muted">هدف '+e.target+' '+esc(e.unit)+(e.hint?" · "+esc(e.hint):"")+'</div></div></div>'+
+          (done? '<span class="chip" style="background:rgba(200,255,53,.15);color:var(--volt);font-size:10px">✔ تم</span>'
+               : '<span class="chip" style="background:'+hexA(c,.1)+';color:'+c+';font-size:10px">'+pct+'%</span>')+
+        '</div>'+
+        '<div class="between" style="align-items:flex-end;margin-top:14px">'+
+          '<div class="row" style="align-items:baseline;gap:5px"><span class="big" style="color:'+(done?c:"#fff")+'">'+reps+'</span>'+
+          '<span class="micro muted">/ '+e.target+'</span></div>'+
+          '<span class="micro '+(done?"":"muted")+'" '+(done?'style="color:'+c+'"':'')+'>'+(done?"الهدف اكتمل 🔥":"فاضل "+(e.target-reps))+'</span>'+
+        '</div>'+
+        '<div class="bar"><i style="width:'+pct+'%;background:'+c+'"></i></div>'+
+        '<div class="btns">'+
+          '<button class="btn btn-ghost btn-square" onclick="addReps('+e.id+',-'+e.step+')" aria-label="خصم">−</button>'+
+          '<button class="btn btn-main" style="background:'+c+'" onclick="addReps('+e.id+','+e.step+')">+'+e.step+'</button>'+
+          (done? '<button class="btn btn-ghost" style="padding:0 10px;font-size:11px;color:'+c+'" onclick="addReps('+e.id+','+e.step+')">+ زيادة</button>'
+               : '<button class="btn btn-ghost" style="padding:0 10px;font-size:11px;color:'+c+'" onclick="addReps('+e.id+','+(e.target-reps)+')">✨ خلّص</button>')+
+        '</div>'+
+        '<div class="between" style="margin-top:8px">'+
+          '<button class="link" onclick="customReps('+e.id+',\''+esc(e.unit)+'\')">سجّل رقم تاني</button>'+
+          '<div class="quick">'+[5,10,25].map(function(q){
+            return '<button class="mini" style="height:26px;padding:0 8px" onclick="addReps('+e.id+','+q+')">+'+q+'</button>';
+          }).join("")+'</div>'+
+        '</div></article>';
+    }).join("") + '<button class="card ecard" style="border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:180px;color:var(--muted);background:none" onclick="openCard()">'+
+      '<span style="font-size:26px">＋</span><b style="color:#fff;font-size:13px">ضيف كارت تمرين</b><span class="micro">أي تمرين انت عايزه</span></button>';
+
+    // الأسبوع
+    var days = [], i;
+    for(i=6;i>=0;i--){ days.push(shift(t,-i)); }
+    var max = 1; days.forEach(function(d){ max = Math.max(max, summary(d).reps); });
+    document.getElementById("weekChart").innerHTML = days.map(function(d){
+      var s = summary(d), h = Math.max(s.reps>0?9:4, s.pct);
+      return '<div class="wcol"><span class="micro num muted">'+s.reps+'</span>'+
+        '<div class="wbar"><i class="'+(s.complete?"full":"")+'" style="height:'+h+'%"></i></div>'+
+        '<span class="micro '+(d===t?"":"muted")+'" '+(d===t?'style="color:var(--volt);font-weight:800"':"")+'>'+weekday(d).slice(0,3)+'</span></div>';
+    }).join("");
+    document.getElementById("mMonth").textContent = monthReps();
+    document.getElementById("mDays").textContent = activeDays();
+    document.getElementById("mStreak").textContent = st;
+
+    renderAlarmBar();
+    renderHistory();
+    renderReminderForm();
+    document.getElementById("storageInfo").textContent = "إجمالي الأيام المسجلة: "+Object.keys(state.logs).length+" · العدة: "+lifetime()+" · التخزين: "+(JSON.stringify(state).length/1024).toFixed(1)+" KB";
+  }
+
+  function renderAlarmBar(){
+    var r = state.reminder;
+    document.getElementById("alarmState").textContent = r.enabled? "شغال":"متوقف";
+    document.getElementById("alarmSub").textContent = r.enabled? ("هيضرب "+time12(r.time)) : "متوقف دلوقتي";
+    document.getElementById("alarmCountdown").textContent = r.enabled? countdown(r) : "شغّله من الإعدادات";
+  }
+  function countdown(r){
+    var now = new Date();
+    for(var off=0; off<8; off++){
+      var c = new Date(now.getTime()); c.setDate(now.getDate()+off);
+      var parts = r.time.split(":"); c.setHours(+parts[0], +parts[1], 0, 0);
+      if(c.getTime() <= now.getTime()) continue;
+      if(r.days.indexOf(c.getDay())===-1) continue;
+      var diff = c.getTime()-now.getTime(), hrs = Math.floor(diff/3600000), mins = Math.round((diff%3600000)/60000);
+      var when = off===0? "النهارده" : off===1? "بكرا" : WEEKDAYS[c.getDay()];
+      return "فاضل "+(hrs>0?hrs+" ساعة و":"")+mins+" دقيقة · "+time12(r.time)+" "+when;
+    }
+    return "مظبوط على "+time12(r.time);
+  }
+
+  var histRange = 14;
+  function renderHistory(){
+    var t = today(), days = [];
+    for(var i=histRange-1;i>=0;i--) days.push(shift(t,-i));
+    var list = activeEx();
+    var complete = 0, total = 0, best = null;
+    days.forEach(function(d){ var s=summary(d); total+=s.reps; if(s.complete) complete++;
+      if(!best || s.reps>best.reps) best = {day:d, reps:s.reps}; });
+    document.getElementById("hTotal").textContent = total;
+    document.getElementById("hComplete").textContent = complete+"/"+days.length;
+    document.getElementById("hAdherence").textContent = Math.round(complete/days.length*100)+"%";
+    document.getElementById("hBest").textContent = best && best.reps>0? best.reps : "—";
+
+    var cols = "130px repeat("+days.length+",minmax(28px,1fr))";
+    var html = '<div class="heat-grid" style="grid-template-columns:'+cols+'">';
+    html += '<div class="micro muted" style="display:flex;align-items:center">التمرين</div>';
+    days.forEach(function(d){ html += '<div class="micro muted" style="text-align:center">'+weekday(d).slice(0,3)+'<div style="font-size:8px;opacity:.6">'+d.slice(-2)+'</div></div>'; });
+    list.forEach(function(e){
+      var c = COLORS[e.accent]||COLORS.volt;
+      html += '<div class="row" style="background:rgba(255,255,255,.03);border-radius:9px;padding:4px 6px;gap:5px">'+
+        '<span style="font-size:13px">'+esc(e.emoji)+'</span><div style="min-width:0"><div class="micro" style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(e.name)+'</div>'+
+        '<div style="font-size:9px;color:var(--muted)">هدف '+e.target+'</div></div></div>';
+      days.forEach(function(d){
+        var reps = repsOf(e.id,d), pct = Math.min(100, Math.round(reps/e.target*100));
+        var style = reps<=0
+          ? "background:rgba(255,255,255,.04);color:rgba(255,255,255,.25)"
+          : "background:"+hexA(c, .18 + pct/100*.7)+";color:"+(pct>55?"#05070c":"#fff");
+        html += '<div class="hcell" style="'+style+'" title="'+dayLabel(d)+' — '+esc(e.name)+': '+reps+'">'+(reps>0?reps:"·")+'</div>';
+      });
+    });
+    html += '</div>';
+    document.getElementById("heat").innerHTML = html;
+
+    var totals = list.map(function(e){
+      var sum = 0; days.forEach(function(d){ sum += repsOf(e.id,d); });
+      return { e:e, sum:sum };
+    });
+    var maxSum = Math.max.apply(null, totals.map(function(x){ return x.sum; }).concat([1]));
+    document.getElementById("totalsList").innerHTML = totals.map(function(x){
+      var c = COLORS[x.e.accent]||COLORS.volt;
+      return '<div class="row" style="margin-bottom:7px"><span class="micro" style="width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.e.emoji+" "+x.e.name)+'</span>'+
+        '<div class="bar grow" style="margin:0"><i style="width:'+Math.round(x.sum/maxSum*100)+'%;background:'+c+'"></i></div>'+
+        '<span class="num micro muted" style="width:44px;text-align:left">'+x.sum+'</span></div>';
+    }).join("") || '<div class="micro muted">مفيش كروت.</div>';
+  }
+
+  function renderReminderForm(){
+    var r = state.reminder;
+    document.getElementById("alarmToggle").className = "switch"+(r.enabled?" on":"");
+    document.getElementById("alarmToggle").innerHTML = "<b>"+(r.enabled?"ON":"OFF")+"</b>";
+    var timeInput = document.getElementById("alarmTime");
+    if(document.activeElement !== timeInput) timeInput.value = r.time;
+    var msg = document.getElementById("alarmMsg");
+    if(document.activeElement !== msg) msg.value = r.message;
+    document.getElementById("dayBtns").innerHTML = WEEKDAYS.map(function(d,i){
+      return '<button class="day-btn'+(r.days.indexOf(i)>-1?" on":"")+'" data-day="'+i+'">'+d+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll("#dayBtns .day-btn"), function(btn){
+      btn.onclick = function(){
+        var d = +btn.getAttribute("data-day"), idx = state.reminder.days.indexOf(d);
+        if(idx>-1){ if(state.reminder.days.length===1) return; state.reminder.days.splice(idx,1); }
+        else { state.reminder.days.push(d); }
+        state.reminder.days.sort(function(a,b){return a-b;});
+        save(); renderReminderForm();
+      };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".sound"), function(btn){
+      btn.className = "sound"+(btn.getAttribute("data-sound")===r.sound?" on":"");
+      btn.onclick = function(){ state.reminder.sound = btn.getAttribute("data-sound"); save(); renderReminderForm(); };
+    });
+    document.getElementById("customUrlBox").style.display = r.sound==="custom"? "block":"none";
+    var urlInput = document.getElementById("alarmUrl");
+    if(document.activeElement !== urlInput) urlInput.value = r.url||"";
+
+    // محرر الكروت
+    document.getElementById("cardsEditor").innerHTML = state.exercises.map(function(e){
+      var c = COLORS[e.accent]||COLORS.volt;
+      return '<div class="between" style="gap:8px;background:rgba(255,255,255,.03);border-radius:14px;padding:8px 10px;margin-bottom:8px'+(e.archived?';opacity:.5':'')+'">'+
+        '<div class="row grow"><div class="icon" style="width:36px;height:36px;border-radius:12px;font-size:17px;color:'+c+';background:'+hexA(c,.12)+'">'+esc(e.emoji)+'</div>'+
+        '<div class="grow" style="min-width:0"><div style="font-size:12px;font-weight:800">'+esc(e.name)+' <span class="micro muted">('+e.target+' '+esc(e.unit)+')</span></div>'+
+        '<div class="micro muted">خطوة +'+e.step+'</div></div></div>'+
+        '<div class="row" style="gap:5px"><button class="mini" onclick="openCard('+e.id+')">✏️</button>'+
+        '<button class="mini" onclick="toggleArchive('+e.id+')">'+(e.archived?"↩":"🗑")+'</button></div></div>';
+    }).join("");
+  }
+
+  function hexA(hex, a){
+    var h = hex.replace("#",""); var r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
+    return "rgba("+r+","+g+","+b+","+a+")";
+  }
+
+  /* ---------- أحداث الكروت ---------- */
+  window.addReps = function(id, delta){
+    var day = today(); var e = state.exercises.filter(function(x){ return x.id===id; })[0];
+    if(!e) return;
+    var before = summary(day).complete;
+    setReps(id, day, repsOf(id,day)+delta);
+    if(navigator.vibrate) navigator.vibrate(delta>0?12:8);
+    render();
+    if(!before && summary(day).complete){ celebrate(); }
+  };
+  window.customReps = function(id, unit){
+    var v = window.prompt("اكتب عدد "+ (unit||"العدة") +" اللي عملته:");
+    if(v===null) return;
+    var n = Math.floor(Number(v));
+    if(!isFinite(n) || n<=0) return;
+    addReps(id, Math.min(n, 5000));
+  };
+  var editingId = null;
+  window.openCard = function(id){
+    editingId = id || null;
+    var e = id? state.exercises.filter(function(x){ return x.id===id; })[0] : null;
+    document.getElementById("cardModalTitle").textContent = e? "تعديل كارت" : "كارت تمرين جديد";
+    document.getElementById("fName").value = e? e.name : "";
+    document.getElementById("fUnit").value = e? e.unit : "عدة";
+    document.getElementById("fTarget").value = e? e.target : 30;
+    document.getElementById("fStep").value = e? e.step : 10;
+    document.getElementById("fEmoji").value = e? e.emoji : "💪";
+    document.getElementById("fHint").value = e && e.hint? e.hint : "";
+    selectedColor = e? e.accent : "volt";
+    document.getElementById("deleteCard").style.display = e? "block":"none";
+    renderColors();
+    document.getElementById("cardModal").classList.add("on");
+  };
+  window.closeCard = function(){ document.getElementById("cardModal").classList.remove("on"); };
+  var selectedColor = "volt";
+  function renderColors(){
+    document.getElementById("colorBtns").innerHTML = Object.keys(COLORS).map(function(k){
+      return '<button class="btn" style="width:30px;height:30px;border-radius:50%;padding:0;background:'+COLORS[k]+';border:'+(k===selectedColor?"2px solid #fff":"2px solid transparent")+'" data-color="'+k+'" aria-label="'+k+'"></button>';
+    }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll("#colorBtns button"), function(b){
+      b.onclick = function(){ selectedColor = b.getAttribute("data-color"); renderColors(); };
+    });
+  }
+  document.getElementById("saveCard").onclick = function(){
+    var name = document.getElementById("fName").value.trim();
+    var unit = document.getElementById("fUnit").value.trim() || "عدة";
+    var target = Math.floor(Number(document.getElementById("fTarget").value));
+    var step = Math.floor(Number(document.getElementById("fStep").value));
+    var emoji = (document.getElementById("fEmoji").value || "💪").trim().slice(0,4);
+    var hint = document.getElementById("fHint").value.trim();
+    if(!name){ toast("اكتب اسم التمرين"); return; }
+    if(!isFinite(target) || target<1){ toast("الهدف لازم رقم أكبر من صفر"); return; }
+    if(!isFinite(step) || step<1) step = Math.max(1, Math.round(target/5));
+    if(editingId){
+      var e = state.exercises.filter(function(x){ return x.id===editingId; })[0];
+      if(e){ e.name=name; e.unit=unit; e.target=target; e.step=step; e.emoji=emoji; e.hint=hint; e.accent=selectedColor; }
+    } else {
+      state.exercises.push({ id:state.nextId++, name:name, unit:unit, target:target, step:step, emoji:emoji, hint:hint, accent:selectedColor, archived:false });
+    }
+    save(); closeCard(); render(); toast("اتحفظ ✔","ok");
+  };
+  document.getElementById("deleteCard").onclick = function(){
+    if(!editingId) return;
+    if(!window.confirm("تحذف الكارت؟ بياناته هتتشال.")) return;
+    state.exercises = state.exercises.filter(function(x){ return x.id!==editingId; });
+    Object.keys(state.logs).forEach(function(d){ delete state.logs[d][editingId]; });
+    save(); closeCard(); render(); toast("الكارت اتحذف","ok");
+  };
+  window.toggleArchive = function(id){
+    var e = state.exercises.filter(function(x){ return x.id===id; })[0];
+    if(!e) return;
+    e.archived = !e.archived;
+    save(); render();
+  };
+
+  /* ---------- المنبه ---------- */
+  document.getElementById("alarmToggle").onclick = function(){
+    state.reminder.enabled = !state.reminder.enabled; save(); render();
+  };
+  document.getElementById("alarmTime").onchange = function(){
+    state.reminder.time = this.value || "22:00"; save(); render();
+  };
+  document.getElementById("alarmMsg").onchange = function(){
+    state.reminder.message = this.value.trim() || "قوم اتمرن يا وحش… الدنيا مستنياك 👊"; save(); render();
+  };
+  document.getElementById("alarmUrl").onchange = function(){
+    state.reminder.url = this.value.trim(); save();
+  };
+  document.getElementById("saveAlarm").onclick = function(){
+    state.reminder.enabled = true; save(); render(); toast("إعدادات المنبه اتحفظت ✔","ok");
+  };
+  document.getElementById("allDays").onclick = function(){ state.reminder.days=[0,1,2,3,4,5,6]; save(); render(); };
+  document.getElementById("altDays").onclick = function(){ state.reminder.days=[0,2,4]; save(); render(); };
+  document.getElementById("testAlarm").onclick = function(){ fireAlarm(true); };
+  document.getElementById("testAlarm2").onclick = function(){ fireAlarm(true); };
+  document.getElementById("notifyBtn").onclick = function(){
+    if(!("Notification" in window)){ toast("المتصفح ده مش بيدعم الإشعارات"); return; }
+    Notification.requestPermission().then(function(p){
+      document.getElementById("notifyState").textContent = p==="granted"? "الإشعارات اتفعّلت ✔" : "الإشعارات مش مفعّلة";
+      if(p==="granted") new Notification("عَدّاد", { body:"تمام! هنظهرلك تنبيه المنبه هنا." });
+    });
+  };
+  function firedKey(time){ return "addad.fired."+today()+"."+time; }
+  function alreadyFired(time){ try{ return localStorage.getItem(firedKey(time))==="1"; }catch(e){ return false; } }
+  function markFired(time){ try{ localStorage.setItem(firedKey(time),"1"); }catch(e){} }
+
+  var snoozeAt = null;
+  function checkAlarm(){
+    var r = state.reminder; if(!r.enabled) return;
+    if(snoozeAt && Date.now()>=snoozeAt){ snoozeAt=null; fireAlarm(true); return; }
+    if(document.getElementById("alarmScreen").classList.contains("on")) return;
+    var now = new Date(), clock = pad(now.getHours())+":"+pad(now.getMinutes());
+    if(clock===r.time && r.days.indexOf(now.getDay())>-1 && !alreadyFired(r.time)) fireAlarm(false);
+  }
+  function fireAlarm(manual){
+    if(!manual) markFired(state.reminder.time);
+    document.getElementById("alarmClock").textContent = time12(state.reminder.time);
+    document.getElementById("alarmMessage").textContent = state.reminder.message;
+    var t = today();
+    document.getElementById("alarmTasks").innerHTML = activeEx().map(function(e){
+      var reps = repsOf(e.id,t), remaining = Math.max(0, e.target-reps), done = reps>=e.target;
+      var c = COLORS[e.accent]||COLORS.volt;
+      return '<div class="row" style="background:rgba(255,255,255,.03);border-radius:12px;padding:6px 8px;margin-bottom:6px">'+
+        '<span style="font-size:16px">'+esc(e.emoji)+'</span>'+
+        '<div class="grow"><div class="between"><b style="font-size:12px">'+esc(e.name)+'</b><span class="num micro" style="color:'+c+'">'+reps+'/'+e.target+'</span></div>'+
+        '<div class="bar" style="height:5px;margin-top:5px"><i style="width:'+Math.min(100,Math.round(reps/e.target*100))+'%;background:'+c+'"></i></div></div>'+
+        (done? '<span class="chip chip-volt" style="font-size:10px">✔</span>'
+             : '<button class="mini" style="color:'+c+'" onclick="alarmAdd('+e.id+','+Math.min(e.step,remaining)+')">+'+Math.min(e.step,remaining)+'</button>')+
+        '</div>';
+    }).join("");
+    document.getElementById("alarmScreen").classList.add("on");
+    playHype();
+    if("Notification" in window && Notification.permission==="granted"){
+      try{ new Notification("⏰ منبه التمرين", { body: state.reminder.message, tag:"workout-alarm" }); }catch(e){}
+    }
+  }
+  window.alarmAdd = function(id, delta){
+    addReps(id, delta);
+    fireAlarm(true);
+  };
+  window.dismissAlarm = function(){
+    markFired(state.reminder.time);
+    stopHype();
+    document.getElementById("alarmScreen").classList.remove("on");
+    snoozeAt = null;
+  };
+  window.snoozeAlarm = function(){
+    markFired(state.reminder.time);
+    stopHype();
+    document.getElementById("alarmScreen").classList.remove("on");
+    snoozeAt = Date.now() + 10*60*1000;
+    toast("تمام… هنبهك تاني بعد 10 دقايق","ok");
+  };
+
+  /* ---------- الصوت ---------- */
+  var actx=null, master=null, noiseBuf=null, sched=null, step=0, nextTime=0, playing=false, track="hype", volume=.65, customAudio=null;
+  function ensureCtx(){
+    if(actx) return actx;
+    var C = window.AudioContext || window.webkitAudioContext; if(!C) return null;
+    actx = new C(); master = actx.createGain(); master.gain.value = volume; master.connect(actx.destination);
+    var len = Math.floor(actx.sampleRate*.4); noiseBuf = actx.createBuffer(1,len,actx.sampleRate);
+    var data = noiseBuf.getChannelData(0); for(var i=0;i<len;i++) data[i]=Math.random()*2-1;
+    return actx;
+  }
+  function kick(time){
+    var o=actx.createOscillator(), g=actx.createGain();
+    o.type="sine"; o.frequency.setValueAtTime(155,time); o.frequency.exponentialRampToValueAtTime(44,time+.16);
+    g.gain.setValueAtTime(.9,time); g.gain.exponentialRampToValueAtTime(.001,time+.28);
+    o.connect(g).connect(master); o.start(time); o.stop(time+.3);
+  }
+  function hat(time, snare){
+    var s=actx.createBufferSource(); s.buffer=noiseBuf;
+    var f=actx.createBiquadFilter(), g=actx.createGain();
+    if(snare){ f.type="bandpass"; f.frequency.value=1900; g.gain.setValueAtTime(.4,time); g.gain.exponentialRampToValueAtTime(.001,time+.17); }
+    else { f.type="highpass"; f.frequency.value=8200; g.gain.setValueAtTime(.18,time); g.gain.exponentialRampToValueAtTime(.001,time+.05); }
+    s.connect(f).connect(g).connect(master); s.start(time); s.stop(time+.22);
+  }
+  function tone(time, freq, dur, wave, level){
+    var o=actx.createOscillator(), g=actx.createGain(), f=actx.createBiquadFilter();
+    o.type=wave; o.frequency.setValueAtTime(freq,time);
+    f.type="lowpass"; f.frequency.value=3200;
+    g.gain.setValueAtTime(.0001,time); g.gain.exponentialRampToValueAtTime(level,time+.02); g.gain.exponentialRampToValueAtTime(.0001,time+dur);
+    o.connect(f).connect(g).connect(master); o.start(time); o.stop(time+dur+.05);
+  }
+  function scheduleStep(i, time){
+    var cfg = TRACKS[track] || TRACKS.hype;
+    if(cfg.kick.indexOf(i)>-1) kick(time);
+    if(cfg.hats.indexOf(i)>-1) hat(time, i%4===0);
+    var b = cfg.bass[i%cfg.bass.length]; if(b) tone(time, b, .22, "sawtooth", .15);
+    var l = cfg.lead[i%cfg.lead.length]; if(l) tone(time, l, .16, cfg.leadWave, .05);
+  }
+  function tick(){
+    if(!playing || !actx) return;
+    var cfg = TRACKS[track] || TRACKS.hype, dur = 60/cfg.bpm/4;
+    while(nextTime < actx.currentTime + .2){ scheduleStep(step, nextTime); step = (step+1)%16; nextTime += dur; }
+  }
+  function playHype(){
+    if(state.reminder.sound==="custom" && state.reminder.url){
+      try{
+        customAudio = new Audio(state.reminder.url); customAudio.loop = true; customAudio.volume = volume;
+        customAudio.play().catch(function(){ startSynth(); });
+        setPlayUI(true); return;
+      }catch(e){}
+    }
+    startSynth();
+  }
+  function startSynth(){
+    if(!ensureCtx()){ toast("المتصفح مش بيدعم الصوت"); return; }
+    if(actx.state==="suspended") actx.resume();
+    playing = true; step = 0; nextTime = actx.currentTime + .08;
+    if(sched) clearInterval(sched);
+    sched = setInterval(tick, 25); tick(); setPlayUI(true);
+  }
+  function stopHype(){
+    playing = false;
+    if(sched){ clearInterval(sched); sched = null; }
+    if(actx && actx.state==="running") actx.suspend();
+    if(customAudio){ try{ customAudio.pause(); }catch(e){} customAudio = null; }
+    setPlayUI(false);
+  }
+  function setPlayUI(on){
+    var btn = document.getElementById("playBtn"); if(btn) btn.textContent = on? "❚❚":"▶";
+    var eq = document.getElementById("eq"); if(eq) eq.style.opacity = on? "1":".45";
+  }
+  document.getElementById("playBtn").onclick = function(){
+    if(playing || customAudio) { stopHype(); return; }
+    track = TRACKS[state.reminder.sound]? state.reminder.sound : "hype";
+    playHype();
+  };
+  document.getElementById("alarmPlay").onclick = function(){
+    if(playing || customAudio) stopHype(); else playHype();
+  };
+  document.getElementById("vol").oninput = function(){
+    volume = +this.value/100;
+    document.getElementById("volText").textContent = this.value;
+    if(master && actx) master.gain.setTargetAtTime(volume, actx.currentTime, .02);
+    if(customAudio) customAudio.volume = volume;
+  };
+  function renderTracks(){
+    var box = document.getElementById("trackBtns");
+    box.innerHTML = Object.keys(TRACKS).map(function(k){
+      return '<button class="mini" data-track="'+k+'" style="'+(k===track?'color:var(--volt);border:1px solid rgba(200,255,53,.4)':'')+'">'+TRACKS[k].emoji+" "+TRACKS[k].name+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(box.querySelectorAll("button"), function(b){
+      b.onclick = function(){
+        track = b.getAttribute("data-track");
+        state.reminder.sound = track; save();
+        document.getElementById("trackLabel").textContent = TRACKS[track].emoji+" "+TRACKS[track].name;
+        renderTracks();
+        if(playing){ playing=false; if(sched) clearInterval(sched); startSynth(); }
+      };
+    });
+    document.getElementById("trackLabel").textContent = (TRACKS[track]||TRACKS.hype).emoji+" "+(TRACKS[track]||TRACKS.hype).name;
+  }
+
+  /* ---------- تنقل ---------- */
+  window.go = function(view){
+    ["today","history","settings"].forEach(function(v){
+      document.getElementById("view-"+v).classList.toggle("on", v===view);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".nav button"), function(b){
+      b.classList.toggle("on", b.getAttribute("data-view")===view);
+    });
+    if(view==="history") renderHistory();
+    window.scrollTo({ top:0, behavior:"smooth" });
+  };
+  Array.prototype.forEach.call(document.querySelectorAll(".nav button"), function(b){
+    b.onclick = function(){ go(b.getAttribute("data-view")); };
+  });
+
+  /* ---------- نسخ احتياطي ---------- */
+  document.getElementById("exportBtn").onclick = function(){
+    var text = "\ufeff" + JSON.stringify(state, null, 2);
+    var blob = new Blob([text], {type:"application/json;charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "addad-backup-"+today()+".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    toast("تم تنزيل النسخة ✔","ok");
+  };
+  document.getElementById("importBtn").onclick = function(){ document.getElementById("importFile").click(); };
+  document.getElementById("importFile").onchange = function(ev){
+    var file = ev.target.files && ev.target.files[0]; if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var data = JSON.parse(String(reader.result).replace(/^\ufeff/, ""));
+        if(!data.exercises || !data.logs) throw new Error("bad");
+        state = Object.assign({ nextId:1, reminder:state.reminder }, data);
+        if(!state.reminder) state.reminder = load().reminder;
+        state.nextId = state.nextId || (state.exercises.reduce(function(m,e){return Math.max(m,e.id||0);},0)+1);
+        save(); render(); toast("رجّعنا النسخة ✔","ok");
+      }catch(e){ toast("الملف مش صالح"); }
+    };
+    reader.readAsText(file);
+    ev.target.value = "";
+  };
+  document.getElementById("resetBtn").onclick = function(){
+    if(!window.confirm("هتمسح كل الكروت والسجلات على الجهاز. متأكد؟")) return;
+    try{ localStorage.removeItem(LS); }catch(e){}
+    state = load(); render(); toast("اتصفّر كل حاجة","ok");
+  };
+
+  /* ---------- احتفال + توست ---------- */
+  function celebrate(){
+    var overlay = document.createElement("div");
+    overlay.className = "modal on";
+    overlay.innerHTML = '<div class="card box pop" style="text-align:center;border-color:rgba(200,255,53,.4)">'+
+      '<div style="font-size:48px">🏆</div><h2 style="font-size:20px;margin:8px 0 2px">النهارده خلص كامل!</h2>'+
+      '<p class="tiny muted">'+summary(today()).reps+' عدة في يوم واحد · سلسلة '+streak()+' يوم</p>'+
+      '<div style="margin:14px 0;background:rgba(200,255,53,.1);border-radius:12px;padding:10px;color:var(--volt);font-size:12px;font-weight:800">الجسم بيشكرك… ريّح واشرب مياه 💧</div>'+
+      '<button class="btn btn-main" style="background:var(--volt)">يلا نكمل بكره</button></div>';
+    overlay.onclick = function(){ overlay.remove(); };
+    document.body.appendChild(overlay);
+    if(navigator.vibrate) navigator.vibrate([40,60,40,60,120]);
+  }
+  var toastTimer = null;
+  function toast(msg, kind){
+    var el = document.getElementById("toast");
+    el.textContent = msg;
+    el.className = "toast"+(kind==="ok"?" ok":"");
+    el.style.display = "block";
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.style.display="none"; }, 2600);
+  }
+
+  /* ---------- الإقلاع ---------- */
+  track = TRACKS[state.reminder.sound]? state.reminder.sound : "hype";
+  renderTracks();
+  render();
+  if("Notification" in window) document.getElementById("notifyState").textContent = Notification.permission==="granted"? "الإشعارات مفعّلة ✔" : "الإشعارات مش مفعّلة — فعّلها عشان المنبه يظهر بره الصفحة.";
+  setInterval(function(){ checkAlarm(); renderAlarmBar(); }, 5000);
+  checkAlarm();
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden){ render(); checkAlarm(); } });
+})();
+</script>
+</body>
+</html>
