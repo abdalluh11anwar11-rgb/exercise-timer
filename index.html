@@ -124,6 +124,29 @@
   .install-hint{display:flex;gap:10px;align-items:flex-start;background:rgba(200,255,53,.06);
     border:1px solid rgba(200,255,53,.25);border-radius:16px;padding:12px;margin-bottom:12px;font-size:11px;line-height:1.7}
   .sep{height:1px;background:rgba(255,255,255,.08);margin:14px 0}
+
+  /* Premium visual refresh */
+  :root{--ink:#070914;--panel:#101629;--line:rgba(255,255,255,.12);--muted:#aab4ca;--volt:#d5ff36;--orange:#ff9b45;--sky:#48e1ff;--pink:#ff6fc7;--violet:#b39aff;--rose:#ff7188;--radius:24px}
+  body{background-color:#070914;background-image:radial-gradient(900px 560px at 85% -8%,rgba(213,255,54,.17),transparent 58%),radial-gradient(760px 520px at 4% 12%,rgba(72,225,255,.15),transparent 58%),radial-gradient(700px 500px at 90% 95%,rgba(179,154,255,.13),transparent 60%),linear-gradient(145deg,#070914,#0a1020 55%,#080b16)}
+  .card{background-image:linear-gradient(145deg,rgba(26,36,60,.96),rgba(10,15,29,.97));border-color:rgba(255,255,255,.1);box-shadow:0 22px 55px -30px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.07)}
+  .logo{background:linear-gradient(145deg,#e6ff75,#a9ef19);box-shadow:0 8px 28px -8px rgba(213,255,54,.8)}
+  .ecard{isolation:isolate;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;transform-style:preserve-3d}
+  .ecard:hover{transform:translateY(-5px) perspective(900px) rotateX(1deg);border-color:rgba(213,255,54,.35);box-shadow:0 28px 58px -30px rgba(0,0,0,.95),0 0 30px -20px rgba(213,255,54,.4)}
+  .exercise-art{height:128px;position:relative;overflow:hidden;border-radius:19px;margin:0 0 14px;background:linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;perspective:700px}
+  .exercise-art:before{content:"";position:absolute;width:190px;height:100px;border-radius:50%;background:var(--art-glow);filter:blur(34px);opacity:.6;transform:translate(18px,18px)}
+  .exercise-art svg{height:120px;width:100%;max-width:250px;position:relative;z-index:1;filter:drop-shadow(0 15px 13px rgba(0,0,0,.4));transform:translateZ(22px)}
+  .art-label{position:absolute;bottom:9px;inset-inline-start:12px;font-size:10px;font-weight:900;letter-spacing:.08em;color:rgba(255,255,255,.58);z-index:2}
+  .timer-inline{margin-top:13px;padding:12px;border:1px solid rgba(72,225,255,.25);border-radius:17px;background:linear-gradient(130deg,rgba(72,225,255,.1),rgba(179,154,255,.07));}
+  .timer-display{font-size:29px;font-weight:950;font-variant-numeric:tabular-nums;letter-spacing:.04em;color:var(--sky);text-shadow:0 0 22px rgba(72,225,255,.28)}
+  .timer-track{height:5px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-top:8px}
+  .timer-track i{height:100%;display:block;width:100%;background:linear-gradient(90deg,var(--sky),var(--violet));border-radius:99px;transition:width .25s linear}
+  .timer-actions{display:flex;gap:7px;margin-top:10px}.timer-actions .mini{flex:1;height:35px;color:#fff;background:rgba(255,255,255,.08)}
+  .timer-actions .mini:first-child{background:linear-gradient(120deg,#36cde9,#7d9cff);color:#07111c}
+  .nav{background:rgba(7,9,20,.91);border-color:rgba(255,255,255,.11)}
+  .btn-main{box-shadow:0 8px 20px -12px currentColor}
+  .stat{background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.018));border-color:rgba(255,255,255,.09)}
+  @media(max-width:480px){.exercise-art{height:112px}.ecard{padding:12px}.timer-display{font-size:26px}}
+
 </style>
 </head>
 <body>
@@ -465,6 +488,33 @@
   function activeDays(){ var set={}, n=0;
     for(var d in state.logs){ var row=state.logs[d]; var sum=0; for(var k in row) sum += (+row[k]||0); if(sum>0 && !set[d]){ set[d]=1; n++; } } return n; }
 
+
+  /* ---------- مؤقت مدمج داخل كارت التمرين الزمني ---------- */
+  var exerciseTimers = {};
+  function formatTimer(sec){ var m=Math.floor(sec/60),r=sec%60; return pad(m)+":"+pad(r); }
+  function timerRender(id){
+    var e=state.exercises.filter(function(x){return x.id===id;})[0]; if(!e)return;
+    var t=exerciseTimers[id]||{remaining:e.target,running:false};
+    var out=document.getElementById("timerValue-"+id),bar=document.getElementById("timerProgress-"+id),btn=document.getElementById("timerToggle-"+id);
+    if(out)out.textContent=formatTimer(t.remaining);
+    if(bar)bar.style.width=Math.max(0,Math.min(100,t.remaining/Math.max(1,e.target)*100))+"%";
+    if(btn)btn.textContent=t.running?"إيقاف مؤقت":"ابدأ المؤقت";
+  }
+  window.toggleExerciseTimer=function(id){
+    var e=state.exercises.filter(function(x){return x.id===id;})[0];if(!e)return;
+    var t=exerciseTimers[id]||(exerciseTimers[id]={remaining:e.target,running:false,interval:null});
+    if(t.running){clearInterval(t.interval);t.running=false;timerRender(id);return;}
+    if(t.remaining<=0)t.remaining=e.target;
+    t.running=true;timerRender(id);
+    t.interval=setInterval(function(){t.remaining=Math.max(0,t.remaining-1);timerRender(id);if(t.remaining===0){clearInterval(t.interval);t.running=false;toast("انتهى وقت "+e.name+" ✔","ok");if(navigator.vibrate)navigator.vibrate([80,60,80]);}},1000);
+  };
+  window.resetExerciseTimer=function(id){var e=state.exercises.filter(function(x){return x.id===id;})[0];if(!e)return;var t=exerciseTimers[id];if(t&&t.interval)clearInterval(t.interval);exerciseTimers[id]={remaining:e.target,running:false,interval:null};timerRender(id);};
+  function exerciseArtwork(e,c){
+    var name=(e.name||"").toLowerCase(),kind=name.indexOf("ضغط")>-1?"push":name.indexOf("سكوات")>-1?"squat":name.indexOf("بلانك")>-1?"plank":name.indexOf("عقلة")>-1?"pull":name.indexOf("بطن")>-1?"core":"move";
+    var body=kind==="push"?'<path d="M54 89h140M84 84l24-20 35 4 22 18M108 64l-14 20m49-16 20 16M112 63l-8-20m39 25 11-18" />':kind==="squat"?'<path d="M75 35l28 4 20 24-12 23 21 10 18-30-19-30 34 2 17 31-13 32M102 39l-4 25-24 22-13-6 24-34" />':kind==="plank"?'<path d="M45 78h155M67 74l27-15 44 3 30 16M95 59l-7 18m50-15 18 17M66 78l-12 11m140-11 12 10" />':kind==="pull"?'<path d="M48 28h150M110 30v17m-22 0h44m-22 0-20 26m20-26 20 26m-20-26v37" />':kind==="core"?'<path d="M70 86q30-50 75-32l24 30M99 67l-10 20m55-33 20-16m-25 25 14 21" />':'<path d="M60 85l35-38 35 8 25 30m-60-38-8-18m43 26 18-22m-53 52-26 9m91-9 23 8" />';
+    return '<div class="exercise-art" style="--art-glow:'+c+'"><svg viewBox="0 0 250 120" fill="none" stroke="'+c+'" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="ag'+e.id+'" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+c+'"/><stop offset="1" stop-color="#fff" stop-opacity=".35"/></linearGradient></defs><circle cx="126" cy="24" r="12" fill="url(#ag'+e.id+')" stroke="none"/><g stroke="url(#ag'+e.id+')">'+body+'</g><path d="M20 105h210" stroke="white" stroke-opacity=".12" stroke-width="2"/></svg><span class="art-label">TRAINING MODE · 0'+(e.id%9+1)+'</span></div>';
+  }
+
   /* ---------- الرسم ---------- */
   function render(){
     var t = today();
@@ -500,6 +550,7 @@
           (done? '<span class="chip" style="background:rgba(200,255,53,.15);color:var(--volt);font-size:10px">✔ تم</span>'
                : '<span class="chip" style="background:'+hexA(c,.1)+';color:'+c+';font-size:10px">'+pct+'%</span>')+
         '</div>'+
+        exerciseArtwork(e,c)+
         '<div class="between" style="align-items:flex-end;margin-top:14px">'+
           '<div class="row" style="align-items:baseline;gap:5px"><span class="big" style="color:'+(done?c:"#fff")+'">'+reps+'</span>'+
           '<span class="micro muted">/ '+e.target+'</span></div>'+
@@ -517,6 +568,7 @@
           '<div class="quick">'+[5,10,25].map(function(q){
             return '<button class="mini" style="height:26px;padding:0 8px" onclick="addReps('+e.id+','+q+')">+'+q+'</button>';
           }).join("")+'</div>'+
+        (e.unit==="ثانية"?'<div class="timer-inline"><div class="between"><span class="micro" style="color:var(--sky);font-weight:900">⏱ مؤقت التمرين</span><span class="micro muted">الهدف '+e.target+' ثانية</span></div><div class="between" style="margin-top:7px"><span class="timer-display" id="timerValue-'+e.id+'">'+formatTimer(e.target)+'</span><span class="micro muted">عدّ تنازلي</span></div><div class="timer-track"><i id="timerProgress-'+e.id+'" style="width:100%"></i></div><div class="timer-actions"><button class="mini" id="timerToggle-'+e.id+'" onclick="toggleExerciseTimer('+e.id+')">ابدأ المؤقت</button><button class="mini" onclick="resetExerciseTimer('+e.id+')">إعادة</button></div></div>':'')+
         '</div></article>';
     }).join("") + '<button class="card ecard" style="border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:180px;color:var(--muted);background:none" onclick="openCard()">'+
       '<span style="font-size:26px">＋</span><b style="color:#fff;font-size:13px">ضيف كارت تمرين</b><span class="micro">أي تمرين انت عايزه</span></button>';
