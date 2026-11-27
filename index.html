@@ -154,6 +154,25 @@
   .timer-status{font-size:11px;color:var(--muted);margin-top:9px;min-height:16px}
   @media(max-width:430px){.timer-layout{grid-template-columns:1fr;gap:5px}.timer-stage{padding:4px}.timer-orb{width:142px;height:142px}}
 
+
+  /* 3D refresh + inline exercise timers */
+  :root{--ink:#070b16;--panel:#111a2b;--line:#263650;--muted:#bdc8d9;--volt:#b9ff3b;--orange:#ff9b45;--sky:#48dcff;--pink:#ff70c7;--violet:#b59aff;--rose:#ff7186}
+  body{background-color:#070b16;background-image:radial-gradient(ellipse at 10% 0%,rgba(53,135,255,.23),transparent 42%),radial-gradient(ellipse at 90% 8%,rgba(185,255,59,.15),transparent 38%),linear-gradient(155deg,#080d19,#101a2d 55%,#080d19)}
+  .card{border:1px solid rgba(145,190,255,.17);background-image:linear-gradient(145deg,rgba(28,43,67,.98),rgba(12,19,33,.98));box-shadow:0 18px 34px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.09)}
+  .ecard{transform:translateZ(0);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;box-shadow:0 13px 25px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.1)}
+  .ecard:hover{transform:translateY(-4px);border-color:rgba(185,255,59,.38);box-shadow:0 20px 36px rgba(0,0,0,.4),0 0 24px rgba(72,220,255,.08),inset 0 1px 0 rgba(255,255,255,.13)}
+  .icon{box-shadow:inset 0 2px 5px rgba(255,255,255,.12),0 7px 14px rgba(0,0,0,.25)}
+  .btn-main{box-shadow:0 5px 0 rgba(0,0,0,.22),0 8px 18px rgba(0,0,0,.18)}
+  .inline-timer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;padding:11px 12px;border-radius:16px;background:linear-gradient(135deg,rgba(72,220,255,.13),rgba(185,255,59,.09));border:1px solid rgba(72,220,255,.24);box-shadow:inset 0 1px rgba(255,255,255,.09),0 8px 18px rgba(0,0,0,.2)}
+  .inline-timer-time{font-size:24px;font-weight:950;letter-spacing:1px;font-variant-numeric:tabular-nums;color:#fff;text-shadow:0 0 16px rgba(72,220,255,.28);min-width:72px}
+  .inline-timer-label{font-size:10px;color:#d3e3f5;font-weight:800}
+  .inline-timer-actions{display:flex;gap:6px;align-items:center}
+  .inline-timer-actions .mini{height:34px;color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.13)}
+  .inline-timer-actions .mini.primary{background:var(--volt);color:#101522;border:0}
+  .inline-timer-progress{height:5px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:8px}
+  .inline-timer-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sky),var(--volt));border-radius:99px;transition:width .2s linear}
+  @media(max-width:390px){.inline-timer{align-items:flex-start;flex-direction:column}.inline-timer-actions{width:100%}.inline-timer-actions button{flex:1}}
+
 </style>
 </head>
 <body>
@@ -231,45 +250,6 @@
     </div>
     <div class="grid" id="cardsGrid"></div>
 
-
-    <section class="card p16 timer-panel" id="workoutTimerPanel">
-      <div class="between" style="margin-bottom:12px;align-items:flex-start">
-        <div class="row">
-          <div class="icon" style="color:var(--volt);background:rgba(200,255,53,.12)">⏱️</div>
-          <div><h2 style="font-size:15px">مؤقّت التمرين</h2><div class="micro muted">اضبط وقتك وابدأ من هنا</div></div>
-        </div>
-        <span class="chip chip-volt" style="font-size:10px">WORKOUT TIMER</span>
-      </div>
-      <div class="timer-layout">
-        <div class="timer-stage">
-          <div class="timer-orb">
-            <svg viewBox="0 0 130 130" aria-hidden="true">
-              <circle class="timer-track" cx="65" cy="65" r="52"></circle>
-              <circle class="timer-progress" id="timerProgress" cx="65" cy="65" r="52"></circle>
-            </svg>
-            <div class="timer-readout"><div class="timer-clock" id="timerClock">00:00</div><div class="timer-caption" id="timerCaption">جاهز للبدء</div></div>
-          </div>
-        </div>
-        <div>
-          <div class="timer-inputs">
-            <div><label class="f" for="timerMinutes">الدقائق</label><input id="timerMinutes" type="number" min="0" max="99" value="1" inputmode="numeric"></div>
-            <div><label class="f" for="timerSeconds">الثواني</label><input id="timerSeconds" type="number" min="0" max="59" value="0" inputmode="numeric"></div>
-          </div>
-          <div class="timer-presets" aria-label="أوقات سريعة">
-            <button type="button" data-timer-seconds="30">30 ثانية</button>
-            <button type="button" data-timer-seconds="60">دقيقة</button>
-            <button type="button" data-timer-seconds="120">دقيقتان</button>
-            <button type="button" data-timer-seconds="300">5 دقائق</button>
-          </div>
-          <div class="timer-controls">
-            <button class="btn btn-main" id="timerStart" style="background:var(--volt);color:#080b0d">▶ ابدأ</button>
-            <button class="btn btn-ghost" id="timerPause" disabled>Ⅱ إيقاف</button>
-            <button class="btn btn-ghost" id="timerReset">↺</button>
-          </div>
-          <div class="timer-status" id="timerStatus" role="status" aria-live="polite">اختار المدة أو اضغط على وقت سريع.</div>
-        </div>
-      </div>
-    </section>
 
     <div class="grid2" style="margin-top:14px">
       <div class="card p16">
@@ -576,6 +556,7 @@
           '<span class="micro '+(done?"":"muted")+'" '+(done?'style="color:'+c+'"':'')+'>'+(done?"الهدف اكتمل 🔥":"فاضل "+(e.target-reps))+'</span>'+
         '</div>'+
         '<div class="bar"><i style="width:'+pct+'%;background:'+c+'"></i></div>'+
+        (e.unit==="ثانية" ? '<div class="inline-timer"><div><div class="inline-timer-label">⏱️ مؤقت هذا التمرين</div><div class="inline-timer-time" id="exerciseTimerClock'+e.id+'">'+formatExerciseTime(e.target)+'</div><div class="inline-timer-label" id="exerciseTimerStatus'+e.id+'">جاهز — '+e.target+' ثانية</div></div><div class="inline-timer-actions"><input id="exerciseTimerInput'+e.id+'" type="number" min="5" max="3600" value="'+e.target+'" aria-label="مدة التمرين بالثواني" style="width:76px;height:34px;text-align:center;padding:0 5px"><button class="mini primary" id="exerciseTimerStart'+e.id+'" onclick="exerciseTimerStart('+e.id+',Math.max(5,Math.min(3600,parseInt(document.getElementById(\'exerciseTimerInput'+e.id+'\').value,10)||'+e.target+')))">▶ ابدأ</button><button class="mini" onclick="exerciseTimerReset('+e.id+',Math.max(5,Math.min(3600,parseInt(document.getElementById(\'exerciseTimerInput'+e.id+'\').value,10)||'+e.target+')))">↺</button></div><div class="inline-timer-progress" style="width:100%"><i id="exerciseTimerBar'+e.id+'"></i></div></div>' : '')+
         '<div class="btns">'+
           '<button class="btn btn-ghost btn-square" onclick="addReps('+e.id+',-'+e.step+')" aria-label="خصم">−</button>'+
           '<button class="btn btn-main" style="background:'+c+'" onclick="addReps('+e.id+','+e.step+')">+'+e.step+'</button>'+
@@ -978,128 +959,57 @@
   }
 
 
-  /* ---------- مؤقت التمرين ---------- */
-  var workoutTimer = { duration:0, remaining:0, endAt:0, interval:null, running:false };
-  var timerAudioCtx = null;
-  function timerPad(n){ return String(n).padStart(2,"0"); }
-  function timerReadInputs(){
-    var mins = Math.max(0, Math.min(99, parseInt(document.getElementById("timerMinutes").value,10)||0));
-    var secs = Math.max(0, Math.min(59, parseInt(document.getElementById("timerSeconds").value,10)||0));
-    document.getElementById("timerMinutes").value = mins;
-    document.getElementById("timerSeconds").value = secs;
-    return mins*60+secs;
+
+  /* ---------- مؤقتات داخل كروت التمارين الزمنية ---------- */
+  var exerciseTimers = {};
+  function formatExerciseTime(seconds){
+    seconds=Math.max(0,seconds|0);
+    return String(Math.floor(seconds/60)).padStart(2,"0")+":"+String(seconds%60).padStart(2,"0");
   }
-  function timerSetInputs(total){
-    total = Math.max(0, Math.min(5999, Math.floor(total)));
-    document.getElementById("timerMinutes").value = Math.floor(total/60);
-    document.getElementById("timerSeconds").value = total%60;
-    workoutTimer.duration = total;
-    workoutTimer.remaining = total;
-    timerUpdate();
+  function exerciseTimerPaint(id){
+    var timer=exerciseTimers[id]; if(!timer) return;
+    var clock=document.getElementById("exerciseTimerClock"+id);
+    var bar=document.getElementById("exerciseTimerBar"+id);
+    var status=document.getElementById("exerciseTimerStatus"+id);
+    var start=document.getElementById("exerciseTimerStart"+id);
+    if(clock) clock.textContent=formatExerciseTime(timer.left);
+    if(bar) bar.style.width=(timer.total?((timer.total-timer.left)/timer.total*100):0)+"%";
+    if(status) status.textContent=timer.running?"جاري التمرين":(timer.left===0?"انتهى الوقت":"مؤقت البلانك");
+    if(start) start.textContent=timer.running?"Ⅱ إيقاف":"▶ "+(timer.left<timer.total&&timer.left>0?"استكمال":"ابدأ");
   }
-  function timerUpdate(){
-    var left = Math.max(0, workoutTimer.remaining);
-    document.getElementById("timerClock").textContent = timerPad(Math.floor(left/60))+":"+timerPad(left%60);
-    var pct = workoutTimer.duration>0 ? (left/workoutTimer.duration) : 1;
-    document.getElementById("timerProgress").style.strokeDashoffset = String(326.7*(1-pct));
-    document.getElementById("timerCaption").textContent = workoutTimer.running ? "جاري العدّ" : (left===0 ? "جاهز للبدء" : "الوقت المتبقي");
-    document.getElementById("timerStart").textContent = workoutTimer.remaining>0 && !workoutTimer.running && workoutTimer.duration>0 ? "▶ استكمال" : "▶ ابدأ";
-    document.getElementById("timerPause").disabled = !workoutTimer.running;
-  }
-  function timerBeep(){
-    try{
-      var C = window.AudioContext || window.webkitAudioContext;
-      if(!C) return;
-      if(!timerAudioCtx) timerAudioCtx = new C();
-      if(timerAudioCtx.state==="suspended") timerAudioCtx.resume();
-      var start = timerAudioCtx.currentTime;
-      [0,.28,.56].forEach(function(offset){
-        var osc = timerAudioCtx.createOscillator(), gain = timerAudioCtx.createGain();
-        osc.type = "sine"; osc.frequency.value = 880;
-        gain.gain.setValueAtTime(.0001,start+offset);
-        gain.gain.exponentialRampToValueAtTime(.22,start+offset+.025);
-        gain.gain.exponentialRampToValueAtTime(.0001,start+offset+.2);
-        osc.connect(gain).connect(timerAudioCtx.destination);
-        osc.start(start+offset); osc.stop(start+offset+.22);
-      });
-    }catch(e){}
-    if(navigator.vibrate) navigator.vibrate([180,100,180,100,350]);
-  }
-  function timerFinish(){
-    workoutTimer.running = false;
-    if(workoutTimer.interval){ clearInterval(workoutTimer.interval); workoutTimer.interval=null; }
-    workoutTimer.remaining = 0;
-    timerUpdate();
-    document.getElementById("timerCaption").textContent = "خلص الوقت!";
-    document.getElementById("timerStatus").textContent = "أحسنت! انتهى الوقت المحدد.";
-    timerBeep();
-    toast("⏰ انتهى وقت التمرين!","ok");
-  }
-  function timerTick(){
-    if(!workoutTimer.running) return;
-    workoutTimer.remaining = Math.max(0,Math.ceil((workoutTimer.endAt-Date.now())/1000));
-    timerUpdate();
-    if(workoutTimer.remaining<=0) timerFinish();
-  }
-  function timerStart(){
-    if(workoutTimer.running) return;
-    if(workoutTimer.remaining<=0){
-      var total = timerReadInputs();
-      if(total<=0){ toast("اختار مدة أكبر من صفر"); return; }
-      workoutTimer.duration = total;
-      workoutTimer.remaining = total;
+  function exerciseTimerStart(id,total){
+    var t=exerciseTimers[id];
+    if(!t){t=exerciseTimers[id]={total:total,left:total,running:false,interval:null,endAt:0};}
+    if(t.running){
+      t.left=Math.max(0,Math.ceil((t.endAt-Date.now())/1000));t.running=false;
+      if(t.interval)clearInterval(t.interval);t.interval=null;exerciseTimerPaint(id);return;
     }
-    if(!workoutTimer.duration) workoutTimer.duration = workoutTimer.remaining;
-    try{
-      var C = window.AudioContext || window.webkitAudioContext;
-      if(C && !timerAudioCtx) timerAudioCtx = new C();
-      if(timerAudioCtx && timerAudioCtx.state==="suspended") timerAudioCtx.resume();
-    }catch(e){}
-    workoutTimer.running = true;
-    workoutTimer.endAt = Date.now()+workoutTimer.remaining*1000;
-    document.getElementById("timerStatus").textContent = "ركز في تمرينك… المؤقت شغال.";
-    if(workoutTimer.interval) clearInterval(workoutTimer.interval);
-    workoutTimer.interval = setInterval(timerTick,200);
-    timerTick();
+    if(t.left<=0){t.total=total;t.left=total;}
+    t.endAt=Date.now()+t.left*1000;t.running=true;
+    if(t.interval)clearInterval(t.interval);
+    t.interval=setInterval(function(){
+      t.left=Math.max(0,Math.ceil((t.endAt-Date.now())/1000));
+      if(t.left<=0){
+        t.running=false;clearInterval(t.interval);t.interval=null;
+        exerciseTimerPaint(id);
+        try{var C=window.AudioContext||window.webkitAudioContext;if(C){var a=new C(),o=a.createOscillator(),g=a.createGain();o.frequency.value=880;g.gain.value=.12;o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+.35);}}catch(e){}
+        if(navigator.vibrate)navigator.vibrate([180,90,250]);
+        toast("انتهى وقت التمرين! أحسنت 💪","ok");
+      }else exerciseTimerPaint(id);
+    },200);
+    exerciseTimerPaint(id);
   }
-  function timerPause(){
-    if(!workoutTimer.running) return;
-    workoutTimer.remaining = Math.max(0,Math.ceil((workoutTimer.endAt-Date.now())/1000));
-    workoutTimer.running = false;
-    if(workoutTimer.interval){ clearInterval(workoutTimer.interval); workoutTimer.interval=null; }
-    timerUpdate();
-    document.getElementById("timerStatus").textContent = "المؤقت متوقف مؤقتًا.";
+  function exerciseTimerReset(id,total){
+    var t=exerciseTimers[id];
+    if(t&&t.interval)clearInterval(t.interval);
+    exerciseTimers[id]={total:total,left:total,running:false,interval:null,endAt:0};
+    exerciseTimerPaint(id);
   }
-  function timerReset(){
-    if(workoutTimer.interval){ clearInterval(workoutTimer.interval); workoutTimer.interval=null; }
-    workoutTimer.running = false;
-    workoutTimer.duration = 0;
-    workoutTimer.remaining = 0;
-    document.getElementById("timerMinutes").value = 1;
-    document.getElementById("timerSeconds").value = 0;
-    timerUpdate();
-    document.getElementById("timerStatus").textContent = "اختار المدة أو اضغط على وقت سريع.";
+  function exerciseTimerSet(id,total){
+    var input=document.getElementById("exerciseTimerInput"+id);
+    var value=input?Math.max(5,Math.min(3600,parseInt(input.value,10)||total)):total;
+    exerciseTimerReset(id,value);
   }
-  document.getElementById("timerStart").onclick = timerStart;
-  document.getElementById("timerPause").onclick = timerPause;
-  document.getElementById("timerReset").onclick = timerReset;
-  ["timerMinutes","timerSeconds"].forEach(function(id){
-    document.getElementById(id).addEventListener("change",function(){
-      if(workoutTimer.running) return;
-      var total = timerReadInputs();
-      workoutTimer.duration = 0; workoutTimer.remaining = 0;
-      document.getElementById("timerClock").textContent = timerPad(Math.floor(total/60))+":"+timerPad(total%60);
-      document.getElementById("timerProgress").style.strokeDashoffset = "326.7";
-      document.getElementById("timerCaption").textContent = "جاهز للبدء";
-    });
-  });
-  Array.prototype.forEach.call(document.querySelectorAll("[data-timer-seconds]"),function(btn){
-    btn.onclick = function(){
-      if(workoutTimer.running) return;
-      timerSetInputs(+btn.getAttribute("data-timer-seconds"));
-      document.getElementById("timerStatus").textContent = "المدة جاهزة. اضغط ابدأ.";
-    };
-  });
 
   /* ---------- تنقل ---------- */
   window.go = function(view){
