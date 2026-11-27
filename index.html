@@ -124,6 +124,18 @@
   .install-hint{display:flex;gap:10px;align-items:flex-start;background:rgba(200,255,53,.06);
     border:1px solid rgba(200,255,53,.25);border-radius:16px;padding:12px;margin-bottom:12px;font-size:11px;line-height:1.7}
   .sep{height:1px;background:rgba(255,255,255,.08);margin:14px 0}
+
+  /* Refresh: stronger contrast, depth and exercise visuals */
+  .ecard{background:linear-gradient(145deg,#19243a 0%,#0c1220 58%,#101827 100%);border:1px solid rgba(255,255,255,.13);box-shadow:0 18px 34px -22px #000, inset 0 1px 0 rgba(255,255,255,.09);transition:transform .2s,border-color .2s}
+  .ecard:hover{transform:translateY(-3px);border-color:rgba(200,255,53,.38)}
+  .exercise-photo{height:150px;width:100%;object-fit:cover;border-radius:17px;margin:0 0 13px;border:1px solid rgba(255,255,255,.13);box-shadow:0 12px 25px -18px #000}
+  .inline-timer{margin-top:14px;padding:13px;border-radius:16px;background:linear-gradient(135deg,rgba(255,107,107,.17),rgba(255,138,61,.10));border:1px solid rgba(255,138,61,.35)}
+  .timer-digits{font-size:30px;font-weight:1000;letter-spacing:1px;color:#fff;text-shadow:0 0 18px rgba(255,138,61,.35);font-variant-numeric:tabular-nums}
+  .timer-input{max-width:80px;text-align:center;font-weight:900;background:#080d17}
+  .timer-action{height:38px;padding:0 13px;border-radius:11px;background:linear-gradient(135deg,#ffb347,#ff6b35);color:#17100b;box-shadow:0 5px 0 #9f3c1b,0 10px 18px -12px #ff8a3d}
+  .timer-action.secondary{background:#27354d;color:#fff;box-shadow:0 5px 0 #111b2d}
+  @media(max-width:420px){.exercise-photo{height:125px}}
+
 </style>
 </head>
 <body>
@@ -493,6 +505,10 @@
       var reps = repsOf(e.id,t), pct = Math.min(100, Math.round(reps/e.target*100)), done = reps>=e.target;
       var c = COLORS[e.accent]||COLORS.volt;
       return '<article class="card ecard'+(done?" done":"")+'">'+
+        (e.name==="بلانك" ? '<img class="exercise-photo" src="https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=900&auto=format&fit=crop&q=85" alt="تمرين البلانك" loading="lazy">' :
+         e.name==="ضغط" ? '<img class="exercise-photo" src="https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=900&auto=format&fit=crop&q=85" alt="تمرين الضغط" loading="lazy">' :
+         e.name==="سكوات" ? '<img class="exercise-photo" src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=900&auto=format&fit=crop&q=85" alt="تمرين رياضي" loading="lazy">' :
+         '<div class="exercise-photo" style="height:92px;display:flex;align-items:center;justify-content:center;font-size:48px;background:radial-gradient(circle at 30% 25%, '+hexA(c,.38)+', #101827 72%)">'+esc(e.emoji)+'</div>')+
         '<div class="between" style="align-items:flex-start">'+
           '<div class="row"><div class="icon" style="color:'+c+';background:'+hexA(c,.12)+'">'+esc(e.emoji)+'</div>'+
           '<div><h3 style="font-size:15px">'+esc(e.name)+'</h3>'+
@@ -517,10 +533,14 @@
           '<div class="quick">'+[5,10,25].map(function(q){
             return '<button class="mini" style="height:26px;padding:0 8px" onclick="addReps('+e.id+','+q+')">+'+q+'</button>';
           }).join("")+'</div>'+
-        '</div></article>';
++
+        (e.name==="بلانك" ? '<div class="inline-timer"><div class="between"><b style="color:#ffb36b">⏱ مؤقت البلانك</b><span class="micro muted">اضبط الوقت بنفسك</span></div><div class="row" style="margin-top:10px;justify-content:space-between"><div class="row" style="gap:6px"><input class="timer-input" id="plankMin" type="number" min="0" max="99" value="2" aria-label="دقائق"><span class="muted">د</span><input class="timer-input" id="plankSec" type="number" min="0" max="59" value="0" aria-label="ثواني"><span class="muted">ث</span></div><div class="timer-digits" id="plankClock">02:00</div></div><div class="row" style="margin-top:11px"><button class="timer-action" id="plankStart" onclick="togglePlankTimer()">ابدأ</button><button class="timer-action secondary" onclick="resetPlankTimer()">إعادة ضبط</button></div><div class="tiny muted" id="plankTimerMsg" style="margin-top:8px">لما يخلص الوقت هتسمع تنبيه، وبعدها سجّل وقتك في العداد.</div></div>' : '')+
+        '</article>';
     }).join("") + '<button class="card ecard" style="border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:180px;color:var(--muted);background:none" onclick="openCard()">'+
       '<span style="font-size:26px">＋</span><b style="color:#fff;font-size:13px">ضيف كارت تمرين</b><span class="micro">أي تمرين انت عايزه</span></button>';
 
+    // تهيئة مؤقت البلانك عند أول عرض للكارت
+    if(document.getElementById("plankClock") && !plankRunning) plankDisplay();
     // الأسبوع
     var days = [], i;
     for(i=6;i>=0;i--){ days.push(shift(t,-i)); }
@@ -539,6 +559,41 @@
     renderHistory();
     renderReminderForm();
     document.getElementById("storageInfo").textContent = "إجمالي الأيام المسجلة: "+Object.keys(state.logs).length+" · العدة: "+lifetime()+" · التخزين: "+(JSON.stringify(state).length/1024).toFixed(1)+" KB";
+  }
+
+
+  // مؤقت البلانك المدمج داخل كارت التمرين
+  var plankRemaining=120, plankInterval=null, plankRunning=false;
+  function plankDisplay(){
+    var el=document.getElementById("plankClock"); if(!el)return;
+    el.textContent=pad(Math.floor(plankRemaining/60))+":"+pad(plankRemaining%60);
+  }
+  function togglePlankTimer(){
+    var btn=document.getElementById("plankStart");
+    if(plankRunning){clearInterval(plankInterval);plankInterval=null;plankRunning=false;if(btn)btn.textContent="استكمال";return;}
+    if(plankRemaining<=0) readPlankInputs();
+    if(plankRemaining<=0){toast("اختار مدة أكبر من صفر");return;}
+    plankRunning=true;if(btn)btn.textContent="إيقاف مؤقت";
+    plankInterval=setInterval(function(){
+      plankRemaining--;plankDisplay();
+      if(plankRemaining<=0){
+        clearInterval(plankInterval);plankInterval=null;plankRunning=false;
+        if(btn)btn.textContent="ابدأ من جديد";
+        var msg=document.getElementById("plankTimerMsg");if(msg)msg.textContent="👏 انتهى الوقت! سجّل الثواني التي أكملتها في كارت البلانك.";
+        try{var a=new AudioContext(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.value=.12;o.start();o.stop(a.currentTime+.35);}catch(e){}
+        if(navigator.vibrate)navigator.vibrate([180,90,180]);
+      }
+    },1000);
+  }
+  function readPlankInputs(){
+    var m=Math.max(0,Math.min(99,parseInt(document.getElementById("plankMin").value,10)||0));
+    var sec=Math.max(0,Math.min(59,parseInt(document.getElementById("plankSec").value,10)||0));
+    plankRemaining=m*60+sec;plankDisplay();
+  }
+  function resetPlankTimer(){
+    if(plankInterval)clearInterval(plankInterval);plankInterval=null;plankRunning=false;
+    readPlankInputs();var btn=document.getElementById("plankStart");if(btn)btn.textContent="ابدأ";
+    var msg=document.getElementById("plankTimerMsg");if(msg)msg.textContent="لما يخلص الوقت هتسمع تنبيه، وبعدها سجّل وقتك في العداد.";
   }
 
   function renderAlarmBar(){
